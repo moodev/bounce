@@ -6,6 +6,8 @@
  */
 namespace MooDev\Bounce\Context;
 use MooDev\Bounce\Exception\BounceException;
+use SimpleXMLElement;
+use MooDev\Bounce\Config;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
@@ -162,6 +164,39 @@ class XmlApplicationContextTest extends \PHPUnit_Framework_TestCase
         } catch (BounceException $e) {
             $this->assertEquals(0, strpos($e->getMessage(), "Infinite recursion import detected"));
         }
+    }
+
+    public function testCustomNS() {
+        if (!defined("DOC_DIR")) {
+            define("DOC_DIR", realpath(__DIR__ . '/../../../'));
+        }
+        if (!defined("SIMPLE_CONSTANT")) {
+            define("SIMPLE_CONSTANT", "Hello!");
+        }
+        $xmlFile = __DIR__ . "/customContext.xml";
+        $xmlContext = new XmlApplicationContext($xmlFile, true, array("http://www.moo.com/xsd/fictional-1.0" => new TestAdditionalProvider()));
+        $customBean = $xmlContext->get("customBean");
+        $this->assertEquals("Testing", $customBean->custom);
+    }
+
+}
+
+class TestAdditionalProvider implements ValueTagProvider {
+
+    /**
+     * @param SimpleXMLElement $element
+     * @param Config\Context $contextConfig
+     * @return Config\ValueProvider
+     */
+    public function getValueProvider(SimpleXMLElement $element, Config\Context $contextConfig)
+    {
+
+        $name = $element->getName();
+        if ($name == "test") {
+            return new Config\SimpleValueProvider($element);
+        }
+        return null;
+
     }
 }
 

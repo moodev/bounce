@@ -31,15 +31,23 @@ class XmlApplicationContext extends ApplicationContext
     protected $_processedFiles = array();
 
     /**
+     * @var ValueTagProvider[]
+     */
+    private $_customNamespaces = array();
+
+
+    /**
      * @param $xmlFilePath
      * @param bool $shareBeanCache whether to share the bean cache when the context's uniqueID (file path) is the same.
-     * @throws BounceException
+     * @param ValueTagProvider[] $customNamespaces
+     * @throws \MooDev\Bounce\Exception\BounceException
      */
-    public function __construct($xmlFilePath, $shareBeanCache = true)
+    public function __construct($xmlFilePath, $shareBeanCache = true, $customNamespaces = array())
     {
         if (!file_exists($xmlFilePath)) {
             throw new BounceException("XML context not found: " . $xmlFilePath);
         }
+        $this->_customNamespaces = $customNamespaces;
         $contextConfig = $this->_parseXmlFile(realpath($xmlFilePath));
         //Create the bean factory
         $this->_beanFactory = BeanFactory::getInstance($contextConfig, $shareBeanCache);
@@ -198,6 +206,13 @@ class XmlApplicationContext extends ApplicationContext
     {
         $valueProvider = null;
         $tagName = $element->getName();
+        $nsArray = $element->getNamespaces();
+        if (count($nsArray) > 0) {
+            $namespace = array_shift($nsArray);
+            if (isset($this->_customNamespaces[$namespace])) {
+                return $this->_customNamespaces[$namespace]->getValueProvider($element, $contextConfig);
+            }
+        }
         if ($tagName == "value") {
             $valueProvider = $this->_createSimpleValueProvider(strval($element));
         } elseif ($tagName == "bean") {
@@ -275,4 +290,5 @@ class XmlApplicationContext extends ApplicationContext
         }
         return $valueProvider;
     }
+
 }

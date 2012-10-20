@@ -37,12 +37,13 @@ class ApcCachedXmlApplicationContext extends XmlApplicationContext
      * Creates the caching instance, setting up logging for delegating upwards
      * @param string $xmlFilePath
      * @param bool $shareBeanCache
+     * @param ValueTagProvider[] $customNamespaces
      * @param array $logFactory Callback array to call to obtain a logger instance. Will be called with a single param (class name.)
      */
-    public function __construct($xmlFilePath, $shareBeanCache = true, $logFactory = array('\MooDev\Bounce\Logger\NullLogFactory', 'getLog'))
+    public function __construct($xmlFilePath, $shareBeanCache = true, $customNamespaces = array(), $logFactory = array('\MooDev\Bounce\Logger\NullLogFactory', 'getLog'))
     {
         $this->_log = call_user_func($logFactory, get_class($this));
-        parent::__construct($xmlFilePath, $shareBeanCache);
+        parent::__construct($xmlFilePath, $shareBeanCache, $customNamespaces);
     }
 
     protected function _parseXmlFile($xmlFilePath)
