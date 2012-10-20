@@ -22,7 +22,7 @@ class ConfigValueProvider extends NoUndeclaredProperties implements ValueProvide
      */
     public function getValue(BeanFactory $beanFactory)
     {
-        $config = Zend_Registry::get("config");
+        $config = \Zend_Registry::get("config");
         $configPathElements = explode(".", $this->_configPath);
         $value = $config;
         foreach ($configPathElements as $configPathElement) {

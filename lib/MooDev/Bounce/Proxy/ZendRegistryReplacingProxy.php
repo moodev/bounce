@@ -19,7 +19,7 @@ use MooDev\Bounce\Context\ApplicationContext;
  *
  * @author steve
  */
-class Proxy_ZendRegistryReplacingProxy
+class ZendRegistryReplacingProxy
 {
 
     /**
@@ -68,7 +68,7 @@ class Proxy_ZendRegistryReplacingProxy
     private function _replaceInstance()
     {
         $targetObj = $this->_context->get($this->_targetName);
-        Zend_Registry::getInstance()->set($this->_registryProperty, $targetObj);
+        \Zend_Registry::getInstance()->set($this->_registryProperty, $targetObj);
         return $targetObj;
     }
 }
