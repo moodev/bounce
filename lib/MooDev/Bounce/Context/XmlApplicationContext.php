@@ -157,7 +157,19 @@ class XmlApplicationContext extends ApplicationContext
         $bean->factoryBean = !is_null($factoryBean) ? strval($factoryBean) : null;
         $bean->factoryMethod = !is_null($factoryMethod) ? strval($factoryMethod) : null;
 
+        $bean->scope = isset($beanXml["scope"]) ? $beanXml["scope"] : null;
+
         $bean->name = strval(!is_null($id) ? $id : $name);
+
+        $lookupMethodItems = $beanXml->xpath("beans:lookup-method");
+        foreach ($lookupMethodItems as $lookupMethodXml) {
+            $lookupMethodXml->registerXPathNamespace("beans", "http://www.moo.com/xsd/bounce-beans-1.0");
+            $lookupMethodXml->registerXPathNamespace("php", "http://www.moo.com/xsd/bounce-php-1.0");
+            $lookupMethodConfig = $this->_parseLookupMethod($lookupMethodXml, $contextConfig);
+            if (!is_null($lookupMethodConfig)) {
+                $bean->lookupMethods[] = $lookupMethodConfig;
+            }
+        }
 
         $propertyItems = $beanXml->xpath("beans:property");
         foreach ($propertyItems as $propertyXml) {
@@ -287,6 +299,14 @@ class XmlApplicationContext extends ApplicationContext
             }
         }
         return $valueProvider;
+    }
+
+    protected function _parseLookupMethod(SimpleXMLElement $lookupMethodXml, Config\Context $contextConfig) {
+        $nameAttr = $this->_beansTypeSafeParser->extractAttribute($lookupMethodXml, "name");
+        $beanAttr = $this->_beansTypeSafeParser->extractAttribute($lookupMethodXml, "bean");
+
+        return new Config\LookupMethod(strval($nameAttr), strval($beanAttr));
+
     }
 
 }

@@ -32,6 +32,11 @@ class Bean extends NoUndeclaredProperties
     public $class;
 
     /**
+     * @var string scope of this bean
+     */
+    public $scope = null;
+
+    /**
      * @var ValueProvider[] keyed on the property name
      */
     public $properties = array();
@@ -41,6 +46,11 @@ class Bean extends NoUndeclaredProperties
      * should be passed to the constructor
      */
     public $constructorArguments = array();
+
+    /**
+     * @var LookupMethod[]
+     */
+    public $lookupMethods = array();
 
     /**
      * @var string Factory method to call. If this is set then rather than instantiating the bean directly, we'll call

@@ -136,7 +136,10 @@ class BeanFactory
         //If we have a name on this bean, it's global, so
         //save it so as to deal with circular references
         if (!is_null($definition->name) && trim($definition->name) != "") {
-            $this->_configuredInstances[$definition->name] = $object;
+            if ($definition->scope != "prototype") {
+                // Only save it if we're not supposed to re-instantiate it each time
+                $this->_configuredInstances[$definition->name] = $object;
+            }
         }
         //Now load up all the properties onto the object
         $this->_configureProperties($definition, $object, $referenceFactory);
@@ -240,7 +243,8 @@ class BeanFactory
      */
     protected function _instantiate(Config\Bean $definition, BeanFactory $referenceFactory)
     {
-        //First look at whether there are constructor args defined. If so, we
+
+        //Look at whether there are constructor args defined. If so, we
         //need to get the values for them
         $constructorArgs = array();
         foreach ($definition->constructorArguments as $valueProvider) {
@@ -260,9 +264,50 @@ class BeanFactory
                 return $this->_instantiateByStaticFactory($class, $factoryMethod, $args);
             }
         } else {
+
+            if (!empty($definition->lookupMethods)) {
+                // We need to proxy!
+                $class = $this->_createProxy($definition);
+            }
             // Make our own instance
             return $this->_instantiateByConstructor($class, $args);
         }
+    }
+
+    protected function _createProxy(Config\Bean $definition) {
+        $class = $definition->class;
+
+        $proxyNS = 'MooDev\Bounce\Temp\Proxy';
+        $proxyClass = "Bounce_" . spl_object_hash($this) . "_Proxy_$class";
+        $fullName = '\\' . $proxyNS . '\\' . $proxyClass;
+
+        if (class_exists($fullName, false)) {
+            return $fullName;
+        }
+
+        // TODO: configurable dir and cleanup
+        $tmpFile = tempnam(sys_get_temp_dir(), $proxyClass);
+
+
+        $proxyClassCode = "<?php\n\nnamespace ".$proxyNS.";\n\nclass " . $proxyClass . " {\n    public static \$bounceBeanFactory;\n\n";
+
+        foreach ($definition->lookupMethods as $lookup) {
+
+            $proxyClassCode .= "    public function " . $lookup->name . "() {\n";
+            $proxyClassCode .= "        return self::\$bounceBeanFactory->createByName('" . $lookup->bean . "');\n";
+            $proxyClassCode .= "    }\n\n";
+        }
+
+        $proxyClassCode .= "\n}\n\n";
+
+        file_put_contents($tmpFile, $proxyClassCode);
+        /** @noinspection PhpIncludeInspection */
+        require($tmpFile);
+
+        /** @noinspection PhpUndefinedVariableInspection */
+        $fullName::$bounceBeanFactory = $this;
+
+        return $fullName;
     }
 
     /**

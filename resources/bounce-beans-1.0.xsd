@@ -19,6 +19,7 @@
         <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="property" type="tns:propertyType" />
             <xs:element name="constructor-arg" type="tns:constructorArgType" />
+            <xs:element name="lookup-method" type="tns:lookupMethodType" />
             <xs:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded" />
         </xs:choice>
         <xs:attribute name="id" type="xs:ID" use="optional" />
@@ -26,6 +27,7 @@
         <xs:attribute name="factory-bean" type="xs:string" use="optional" />
         <xs:attribute name="factory-method" type="xs:string" use="optional" />
         <xs:attribute name="class" type="xs:string" />
+        <xs:attribute name="scope" type="xs:string" use="optional" />
     </xs:complexType>
 
     <xs:complexType name="propertyType">
@@ -40,6 +42,11 @@
         <xs:attribute name="name" />
         <xs:attribute name="value" use="optional" />
         <xs:attribute name="ref" use="optional" />
+    </xs:complexType>
+
+    <xs:complexType name="lookupMethodType">
+        <xs:attribute name="name" type="xs:string" />
+        <xs:attribute name="bean" type="xs:string" />
     </xs:complexType>
 
     <xs:complexType name="constructorArgType">

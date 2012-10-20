@@ -179,6 +179,44 @@ class XmlApplicationContextTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("Testing", $customBean->custom);
     }
 
+    public function testSimpleScope() {
+        if (!defined("DOC_DIR")) {
+            define("DOC_DIR", realpath(__DIR__ . '/../../../'));
+        }
+        if (!defined("SIMPLE_CONSTANT")) {
+            define("SIMPLE_CONSTANT", "Hello!");
+        }
+        $xmlFile = __DIR__ . "/scopes.xml";
+        $xmlContext = new XmlApplicationContext($xmlFile, true);
+        $beanOne = $xmlContext->get("one");
+        $beanTwo = $xmlContext->get("one");
+        $this->assertEquals("foo", $beanOne->hi);
+        $this->assertEquals("foo", $beanTwo->hi);
+        $this->assertNotSame($beanOne, $beanTwo);
+
+        $beanOne = $xmlContext->get("two");
+        $beanTwo = $xmlContext->get("two");
+        $this->assertSame($beanOne, $beanTwo);
+    }
+
+    public function testProxyScope() {
+        if (!defined("DOC_DIR")) {
+            define("DOC_DIR", realpath(__DIR__ . '/../../../'));
+        }
+        if (!defined("SIMPLE_CONSTANT")) {
+            define("SIMPLE_CONSTANT", "Hello!");
+        }
+        $xmlFile = __DIR__ . "/scopes.xml";
+        $xmlContext = new XmlApplicationContext($xmlFile, true);
+        $beanOne = $xmlContext->get("three");
+        $beanTwo = $xmlContext->get("three");
+        $this->assertSame($beanOne, $beanTwo);
+        $this->assertEquals("foo", $beanOne->goats()->hi);
+        $this->assertEquals("foo", $beanTwo->goats()->hi);
+        $this->assertNotSame($beanOne->goats(), $beanTwo->goats());
+        $this->assertNotSame($beanOne->goats(), $beanOne->goats());
+
+    }
 }
 
 class TestAdditionalProvider implements ValueTagProvider {
