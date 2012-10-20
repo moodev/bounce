@@ -1,0 +1,52 @@
+<phpunit backupGlobals="false">
+    <!-- Define where our tests are -->
+    <testsuite name="moodev-bounce component">
+        <directory>tests</directory>
+    </testsuite>
+
+    <!-- Define how everything should be logged -->
+    <logging>
+        <log type="coverage-html" target="build/coverage" title="moocommon-infra"
+            charset="UTF-8" yui="true" highlight="true"
+            lowUpperBound="35" highLowerBound="70" />
+        <log type="coverage-clover" target="build/logs/clover.xml" />
+        <log type="junit" target="build/logs/junit.xml" logIncompleteSkipped="false" />
+
+        <pmd>
+            <rule class="PHPUnit_Util_Log_PMD_Rule_Project_CRAP"
+                threshold="5,30" />
+            <rule class="PHPUnit_Util_Log_PMD_Rule_Class_DepthOfInheritanceTree"
+                threshold="6" />
+            <rule class="PHPUnit_Util_Log_PMD_Rule_Class_EfferentCoupling"
+                threshold="20" />
+            <rule class="PHPUnit_Util_Log_PMD_Rule_Class_ExcessiveClassLength"
+                threshold="1000" />
+            <rule class="PHPUnit_Util_Log_PMD_Rule_Class_ExcessivePublicCount"
+                threshold="45" />
+            <rule class="PHPUnit_Util_Log_PMD_Rule_Class_TooManyFields"
+                threshold="15" />
+            <rule class="PHPUnit_Util_Log_PMD_Rule_Function_CodeCoverage"
+                threshold="-2,-1" />
+            <rule class="PHPUnit_Util_Log_PMD_Rule_Function_CRAP"
+                threshold="30" />
+            <rule class="PHPUnit_Util_Log_PMD_Rule_Function_CyclomaticComplexity"
+                threshold="20" />
+            <rule class="PHPUnit_Util_Log_PMD_Rule_Function_ExcessiveMethodLength"
+                threshold="100" />
+            <rule class="PHPUnit_Util_Log_PMD_Rule_Function_ExcessiveParameterList"
+                threshold="10" />
+            <rule class="PHPUnit_Util_Log_PMD_Rule_Function_NPathComplexity"
+                threshold="200" />
+        </pmd>
+    </logging>
+
+    <!-- Define the filtering so we only measure code coverage on our
+our code - don't include anything in the lib dir. More specifically
+we only whitelist the lib tree -->
+    <filter>
+        <whitelist>
+            <directory suffix=".php">lib</directory>
+        </whitelist>
+    </filter>
+
+</phpunit>

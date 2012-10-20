@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.moo.com/xsd/bounce-beans-1.0"
+    xmlns:tns="http://www.moo.com/xsd/bounce-beans-1.0" elementFormDefault="qualified">
+
+    <xs:element name="beans" type="tns:beansType" />
+
+    <xs:complexType name="beansType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="bean" minOccurs="0" maxOccurs="unbounded" type="tns:beanType" />
+            <xs:element name="import" minOccurs="0" maxOccurs="unbounded" type="tns:importType" />
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="importType">
+        <xs:attribute name="path" type="xs:string" />
+    </xs:complexType>
+
+    <xs:complexType name="beanType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="property" type="tns:propertyType" />
+            <xs:element name="constructor-arg" type="tns:constructorArgType" />
+            <xs:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded" />
+        </xs:choice>
+        <xs:attribute name="id" type="xs:ID" use="optional" />
+        <xs:attribute name="name" type="xs:string" use="optional" />
+        <xs:attribute name="factory-bean" type="xs:string" use="optional" />
+        <xs:attribute name="factory-method" type="xs:string" use="optional" />
+        <xs:attribute name="class" type="xs:string" />
+    </xs:complexType>
+
+    <xs:complexType name="propertyType">
+        <xs:choice minOccurs="0" maxOccurs="1">
+            <xs:element name="value" type="xs:string" />
+            <xs:element name="bean" type="tns:beanType" />
+            <xs:element name="map" type="tns:mapType" />
+            <xs:element name="list" type="tns:listType" />
+            <xs:element name="null" type="tns:emptyType" />
+            <xs:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded" />
+        </xs:choice>
+        <xs:attribute name="name" />
+        <xs:attribute name="value" use="optional" />
+        <xs:attribute name="ref" use="optional" />
+    </xs:complexType>
+
+    <xs:complexType name="constructorArgType">
+        <xs:choice minOccurs="0" maxOccurs="1">
+            <xs:element name="value" type="xs:string" />
+            <xs:element name="bean" type="tns:beanType" />
+            <xs:element name="map" type="tns:mapType" />
+            <xs:element name="list" type="tns:listType" />
+            <xs:element name="null" type="tns:emptyType" />
+            <xs:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded" />
+        </xs:choice>
+        <xs:attribute name="value" use="optional" />
+        <xs:attribute name="ref" use="optional" />
+    </xs:complexType>
+
+    <xs:complexType name="emptyType">
+    </xs:complexType>
+
+    <xs:complexType name="mapType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="entry" type="tns:propertyType" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="valueBeanType">
+        <xs:complexContent>
+            <xs:extension base="tns:beanType">
+                <xs:attribute name="ref" use="optional" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="listType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:choice>
+                <xs:element name="value" type="xs:string" />
+                <xs:element name="bean" type="tns:valueBeanType" />
+                <xs:element name="map" type="tns:mapType" />
+                <xs:element name="null" type="tns:emptyType" />
+                <xs:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded" />
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.moo.com/xsd/bounce-php-1.0"
+    xmlns:tns="http://www.moo.com/xsd/bounce-php-1.0" elementFormDefault="qualified">
+
+    <xs:element name="constant" type="tns:constantType" />
+    <xs:complexType name="constantType">
+        <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
+
+    <xs:element name="string" type="tns:stringType" />
+    <xs:complexType name="stringType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string" />
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:element name="int" type="tns:intType" />
+    <xs:complexType name="intType">
+        <xs:simpleContent>
+            <xs:extension base="xs:int" />
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:element name="float" type="tns:floatType" />
+    <xs:complexType name="floatType">
+        <xs:simpleContent>
+            <xs:extension base="xs:float" />
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:element name="bool" type="tns:boolType" />
+    <xs:complexType name="boolType">
+        <xs:simpleContent>
+            <xs:extension base="xs:boolean" />
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:element name="file" type="tns:fileType" />
+    <xs:complexType name="fileType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string" />
+        </xs:simpleContent>
+    </xs:complexType>
+</xs:schema>
