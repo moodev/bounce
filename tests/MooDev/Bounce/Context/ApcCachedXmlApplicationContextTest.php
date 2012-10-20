@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Steve Storey <steves@moo.com>
- * @copyright Copyright (c) 2012, Moo Print Ltd.
+ * @copyright Copyright (c) 2012, MOO Print Ltd.
  * @license ISC
  */
 namespace MooDev\Bounce\Context;
