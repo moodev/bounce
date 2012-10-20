@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author Steve Storey <steves@moo.com>
+ * @copyright Copyright (c) 2012, Moo Print Ltd.
+ * @license ISC
+ */
 namespace MooDev\Bounce\Xml;
 use MooDev\Bounce\Exception\ParserException;
 
