@@ -261,8 +261,6 @@ class XmlApplicationContext extends ApplicationContext
             $valueProvider = new Config\SimpleValueProvider(strval($element) == "true");
         } elseif ($tagName == "file") {
             $valueProvider = new Config\FilePathValueProvider(strval($element));
-        } elseif ($tagName == "config") {
-            $valueProvider = new Config\ConfigValueProvider(strval($element));
         }
         return $valueProvider;
     }
