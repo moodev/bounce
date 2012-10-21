@@ -135,5 +135,46 @@ class BeanFactoryTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testMethodInjectionConstructors()
+    {
+        $context = new Config\Context();
+        $bean = new Config\Bean();
+        $bean->class = "StdClass";
+        $bean->name = "in";
+        $bean->properties["test"] = new Config\SimpleValueProvider("jon");
+        $context->beans["in"] = $bean;
+
+        $bean = new Config\Bean();
+        $bean->class = '\MooDev\Bounce\Context\methodInjectionTestClass';
+        $bean->name = "out";
+        $context->beans["out"] = $bean;
+        $bean->lookupMethods = array(new Config\LookupMethod("getInner", "in"));
+        $bean->constructorArguments = array(
+                 new \MooDev\Bounce\Config\SimpleValueProvider("hello"),
+                 new \MooDev\Bounce\Config\SimpleValueProvider("world")
+            );
+
+
+        $impl = BeanFactory::getInstance($context);
+        $o = $impl->createByName("out");
+        $this->assertEquals("jon", $o->getInner()->test);
+        $this->assertEquals("hello", $o->a);
+        $this->assertEquals("world", $o->b);
+
+
+    }
+}
+
+
+class methodInjectionTestClass {
+
+    public $a;
+    public $b;
+
+    public function __construct($a, $b) {
+        $this->a = $a;
+        $this->b = $b;
+    }
+
 }
 

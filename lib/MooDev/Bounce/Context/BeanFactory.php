@@ -278,6 +278,7 @@ class BeanFactory
     protected function _createProxy($class, $proxyNS, $proxyClass, $definition) {
 
         $rClass = new \ReflectionClass($class);
+        $className = '\\' . $rClass->getName();
         $rCon = $rClass->getConstructor();
         $constructorSig = 'public function __construct($__bounceBeanFactory';
         $callParent = '';
@@ -289,7 +290,7 @@ class BeanFactory
                 $params[] = $param->getName();
             }
             if (!empty($params)) {
-                $paramStr = implode(', ', $params);
+                $paramStr = '$' . implode(', $', $params);
                 $callParent .= $paramStr;
                 $constructorSig .= ', ' . $paramStr;
             }
@@ -297,7 +298,7 @@ class BeanFactory
         }
         $constructorSig .= ')';
 
-        $proxyClassCode = "<?php\n\nnamespace ".$proxyNS.";\n\nclass " . $proxyClass . " {\n    private \$__bounceBeanFactory;\n\n";
+        $proxyClassCode = "<?php\n\nnamespace ".$proxyNS.";\n\nclass " . $proxyClass . " extends " . $className . " {\n    private \$__bounceBeanFactory;\n\n";
 
         $proxyClassCode .= "    " . $constructorSig . " {\n";
         $proxyClassCode .= '        $this->__bounceBeanFactory = $__bounceBeanFactory;' . "\n";
@@ -335,8 +336,8 @@ class BeanFactory
         $class = $definition->class;
 
         $proxyNS = 'MooDev\Bounce\Temp\Proxy';
-
-        $proxyClass = "Bounce_Proxy_{$class}_";
+        $safeClass = preg_replace('/[^a-zA-Z0-9_\x7f-\xff]/', '_', $class);
+        $proxyClass = "Bounce_Proxy_" . $safeClass . "_";
 
         // TODO: reuse of proxies
         do {
