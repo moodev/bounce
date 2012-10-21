@@ -267,47 +267,87 @@ class BeanFactory
 
             if (!empty($definition->lookupMethods)) {
                 // We need to proxy!
-                $class = $this->_createProxy($definition);
+                return $this->_instantiateViaProxy($definition, $args);
+            } else {
+                // Make our own instance
+                return $this->_instantiateByConstructor($class, $args);
             }
-            // Make our own instance
-            return $this->_instantiateByConstructor($class, $args);
         }
     }
 
     protected function _createProxy(Config\Bean $definition) {
+
         $class = $definition->class;
 
         $proxyNS = 'MooDev\Bounce\Temp\Proxy';
-        $proxyClass = "Bounce_" . spl_object_hash($this) . "_Proxy_$class";
+        $proxyClass = "Bounce_Proxy_$class";
         $fullName = '\\' . $proxyNS . '\\' . $proxyClass;
 
         if (class_exists($fullName, false)) {
             return $fullName;
         }
 
-        // TODO: configurable dir and cleanup
-        $tmpFile = tempnam(sys_get_temp_dir(), $proxyClass);
-
-
-        $proxyClassCode = "<?php\n\nnamespace ".$proxyNS.";\n\nclass " . $proxyClass . " {\n    public static \$bounceBeanFactory;\n\n";
-
-        foreach ($definition->lookupMethods as $lookup) {
-
-            $proxyClassCode .= "    public function " . $lookup->name . "() {\n";
-            $proxyClassCode .= "        return self::\$bounceBeanFactory->createByName('" . $lookup->bean . "');\n";
-            $proxyClassCode .= "    }\n\n";
+        // TODO: configurable proxy dir
+        $proxyDir = sys_get_temp_dir() . '/bnceprox/';
+        if (!file_exists($proxyDir)) {
+            mkdir($proxyDir);
         }
+        $fileName = $proxyDir . $proxyClass . '.php';
 
-        $proxyClassCode .= "\n}\n\n";
+        if (!file_exists($fileName)) {
 
-        file_put_contents($tmpFile, $proxyClassCode);
+            $rClass = new \ReflectionClass($class);
+            $rCon = $rClass->getConstructor();
+            $constructorSig = 'public function __construct($__bounceBeanFactory';
+            $callParent = '';
+            if (isset($rCon)) {
+                $callParent = 'parent::__construct(';
+                $rParams = $rCon->getParameters();
+                $params = array();
+                foreach ($rParams as $param) {
+                    $params[] = $param->getName();
+                }
+                if (!empty($params)) {
+                    $paramStr = implode(', ', $params);
+                    $callParent .= $paramStr;
+                    $constructorSig .= ', ' . $paramStr;
+                }
+                $callParent .= ');';
+            }
+            $constructorSig .= ')';
+
+            $proxyClassCode = "<?php\n\nnamespace ".$proxyNS.";\n\nclass " . $proxyClass . " {\n    private \$__bounceBeanFactory;\n\n";
+
+            $proxyClassCode .= "    " . $constructorSig . " {\n";
+            $proxyClassCode .= '        $this->__bounceBeanFactory = $__bounceBeanFactory;' . "\n";
+            $proxyClassCode .= "        " . $callParent . "\n";
+            $proxyClassCode .= "    }\n\n";
+
+            foreach ($definition->lookupMethods as $lookup) {
+
+                $proxyClassCode .= "    public function " . $lookup->name . "() {\n";
+                $proxyClassCode .= "        return \$this->__bounceBeanFactory->createByName('" . $lookup->bean . "');\n";
+                $proxyClassCode .= "    }\n\n";
+            }
+
+            $proxyClassCode .= "\n}\n\n";
+
+            file_put_contents($fileName, $proxyClassCode);
+        }
         /** @noinspection PhpIncludeInspection */
-        require($tmpFile);
-
-        /** @noinspection PhpUndefinedVariableInspection */
-        $fullName::$bounceBeanFactory = $this;
+        require($fileName);
 
         return $fullName;
+    }
+
+    protected function _instantiateViaProxy(Config\Bean $definition, $args) {
+        $proxyName = $this->_createProxy($definition);
+
+        array_unshift($args, $this);
+
+        $proxy = $this->_instantiateByConstructor($proxyName, $args);
+
+        return $proxy;
     }
 
     /**
