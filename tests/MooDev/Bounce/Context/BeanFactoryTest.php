@@ -112,5 +112,28 @@ class BeanFactoryTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals("No object defined with name steve", $e->getMessage());
         }
     }
+
+    public function testMethodInjection()
+    {
+        $context = new Config\Context();
+        $bean = new Config\Bean();
+        $bean->class = "StdClass";
+        $bean->name = "in";
+        $bean->properties["test"] = new Config\SimpleValueProvider("jon");
+        $context->beans["in"] = $bean;
+
+        $bean = new Config\Bean();
+        $bean->class = "StdClass";
+        $bean->name = "out";
+        $context->beans["out"] = $bean;
+        $bean->lookupMethods = array(new Config\LookupMethod("getInner", "in"));
+
+        $impl = BeanFactory::getInstance($context);
+        $o = $impl->createByName("out");
+        $this->assertEquals("jon", $o->getInner()->test);
+
+
+    }
+
 }
 
