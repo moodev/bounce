@@ -25,4 +25,19 @@ class NullLogger implements Logger
     public function warn($msg)
     {
     }
+    
+    public function isDebugEnabled()
+    {
+        return false;
+    }
+
+    public function isInfoEnabled()
+    {
+        return false;
+    }
+
+    public function isWarnEnabled()
+    {
+        return false;
+    }
 }
