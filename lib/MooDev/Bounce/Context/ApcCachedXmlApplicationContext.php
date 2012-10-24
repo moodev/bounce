@@ -50,7 +50,9 @@ class ApcCachedXmlApplicationContext extends XmlApplicationContext
     {
         //Do we have caching enabled?
         if (function_exists("apc_fetch")) {
-            $this->_log->debug("APC caching is ENABLED");
+            if ($this->_log->isDebugEnabled()) {
+                $this->_log->debug("APC caching is ENABLED");
+            }
             //Do we have a cache entry for this file path?
             $cacheKey = "bouncexml~$xmlFilePath";
             $cacheContentSerialized = apc_fetch($cacheKey);
@@ -76,7 +78,9 @@ class ApcCachedXmlApplicationContext extends XmlApplicationContext
             //   "context" => Config_Context
             // )
             if ($cacheContentSerialized) {
-                $this->_log->debug("Found cached version on $xmlFilePath");
+                if ($this->_log->isDebugEnabled()) {
+                    $this->_log->debug("Found cached version on $xmlFilePath");
+                }
                 $cacheContent = unserialize($cacheContentSerialized);
                 //Look at all the files from the cache content array to see
                 //if any of them are different
@@ -90,7 +94,9 @@ class ApcCachedXmlApplicationContext extends XmlApplicationContext
                     $onDiskStatInfo["dev"] != $cachedStatInfo["dev"]
                     ) {
                         $cacheUpToDate = false;
-                        $this->_log->debug("Cache out of date: $fileName has stat: " . print_r($onDiskStatInfo, true) . " but cached " . print_r($cachedStatInfo, true));
+                        if ($this->_log->isDebugEnabled()) {
+                            $this->_log->debug("Cache out of date: $fileName has stat: " . print_r($onDiskStatInfo, true) . " but cached " . print_r($cachedStatInfo, true));
+                        }
                         break;
                     }
                 }
@@ -100,11 +106,15 @@ class ApcCachedXmlApplicationContext extends XmlApplicationContext
                     /*foreach ($filesToCheck as $fileName => $cachedStatInfo) {
                         $this->_processedFiles[$fileName] = $cacheContent["context"];
                     }*/ //TODO We can't update this any more since it's a map of child contexts, which we don't have
-                    $this->_log->debug("Cache is up to date. Returning cached context");
+                    if ($this->_log->isDebugEnabled()) {
+                        $this->_log->debug("Cache is up to date. Returning cached context");
+                    }
                     return $cacheContent["context"];
                 }
             }
-            $this->_log->debug("Cache item not found or invalid for $xmlFilePath. Reloading ...");
+            if ($this->_log->isDebugEnabled()) {
+                $this->_log->debug("Cache item not found or invalid for $xmlFilePath. Reloading ...");
+            }
             //If we get here, we're basically not up to date one way or another
             //so load up the context, and cache it.
             $context = parent::_parseXmlFile($xmlFilePath);
@@ -125,7 +135,9 @@ class ApcCachedXmlApplicationContext extends XmlApplicationContext
             }
             $cacheContentStr = serialize($cacheContent);
             apc_store($cacheKey, $cacheContentStr);
-            $this->_log->debug("Cache item added for $xmlFilePath");
+            if ($this->_log->isDebugEnabled()) {
+                $this->_log->debug("Cache item added for $xmlFilePath");
+            }
             //Return it
             return $context;
         } else {
