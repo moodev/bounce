@@ -1,5 +1,5 @@
 {
-    "name": "moodev/Bounce",
+    "name": "moodev/bounce",
     "type": "library",
     "description": "Dependency injection framework for PHP, similar to Spring",
     "keywords": ["dependencyinjection"],
