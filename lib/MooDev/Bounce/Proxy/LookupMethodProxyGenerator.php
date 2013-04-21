@@ -1,6 +1,10 @@
 <?php
+/**
+ * @author Jonathan Oddy <jonathan@moo.com>
+ * @copyright Copyright (c) 2012, MOO Print Ltd.
+ * @license ISC
+ */
 namespace MooDev\Bounce\Proxy;
-
 
 use MooDev\Bounce\Config\Bean;
 use MooDev\Bounce\Exception\BounceException;
@@ -10,18 +14,39 @@ use MooDev\Bounce\Proxy\CG\MethodBuilder;
 use MooDev\Bounce\Proxy\CG\Param;
 use MooDev\Bounce\Proxy\CG\Property;
 
+/**
+ * Class LookupMethodProxyGenerator
+ * A generator for proxies used for providing lookup method functionality.
+ * @package MooDev\Bounce\Proxy
+ */
 class LookupMethodProxyGenerator {
 
+    /**
+     * @var string
+     */
     private $_proxyNS;
+
+    /**
+     * @var string
+     */
     private $_proxyDir;
+
+    /**
+     * @var string
+     */
     private $_uniqueId;
 
-    function __construct($_proxyDir, $_proxyNS, $_uniqueId)
+    /**
+     * @param string $proxyDir Directory under which the proxies will be created.
+     * @param string $proxyNS Namespace under which the proxies will be created.
+     * @param string $uniqueId string which will be added to the directory and namespace.
+     */
+    function __construct($proxyDir, $proxyNS, $uniqueId)
     {
-        $this->_proxyDir = $_proxyDir;
-        $this->_proxyNS = $_proxyNS;
-        if (!empty($_uniqueId)) {
-            $this->_uniqueId = $this->_makeSafeStr($_uniqueId);
+        $this->_proxyDir = $proxyDir;
+        $this->_proxyNS = $proxyNS;
+        if (!empty($uniqueId)) {
+            $this->_uniqueId = $this->_makeSafeStr($uniqueId);
         }
     }
 
@@ -49,26 +74,42 @@ class LookupMethodProxyGenerator {
         return '\\' . $this->_namespaceForProxy() . '\\' . $this->_nameForProxy($beanName);
     }
 
+    /**
+     * @param Bean $definition Configuration of the bean we need to proxy for.
+     * @return string fully qualified name of the proxy.
+     */
     public function loadProxy(Bean $definition) {
         $fullName = $this->_fullyQualifiedClassName($definition->name);
         if (!class_exists($fullName, false)) {
+            // OK, we need to include it
             $rClass = new \ReflectionClass($definition->class);
 
             $file = $this->_nameToFilename($this->_nameForProxy($definition->name));
             if (($rClass->getFileName() !== false && filemtime($rClass->getFileName()) >= @filemtime($file)) ||
                     !@include($file) ||
                     !class_exists($fullName, false)) {
-                // File out of date, or could not include the file, or it didn't define our proxy. Regenerate it.
-                $tmpFile = $this->generateProxy($rClass, $definition);
+                // File out of date (or was internal), or could not include the file, or it didn't define our proxy. Regenerate it.
+                $tmpFile = $this->generateProxy($definition, $rClass);
                 @rename($tmpFile, $file);
+                // This time we should require it, as it really ought to be there.
                 require($file);
             }
         }
         return $fullName;
     }
 
-    public function generateProxy(\ReflectionClass $rClass, Bean $definition) {
+    /**
+     * Generate a proxy class and write it to a file.
+     * @param Bean $definition Bean to create the proxy for.
+     * @param \ReflectionClass $rClass The class we're proxying (if null, we'll use the Bean's class.)
+     * @return string Full path to a file containing the generated class.
+     * @throws \MooDev\Bounce\Exception\BounceException
+     */
+    public function generateProxy(Bean $definition, \ReflectionClass $rClass = null) {
         $proxyName = $this->_nameForProxy($definition->name);
+        if (!isset($rClass)) {
+            $rClass = new \ReflectionClass($definition->class);
+        }
 
         $constructorBuilder = MethodBuilder::build("__construct")
             ->addParam(new Param("__bounceBeanFactory", false, null, '\MooDev\Bounce\Context\BeanFactory'))
@@ -90,7 +131,7 @@ class LookupMethodProxyGenerator {
 
         $classBuilder = ClassBuilder::build($proxyName, $this->_namespaceForProxy())
             ->extend('\\' . $rClass->getName())
-            ->addProperty(new Property("__bounceBeanFactory", null, "private"))
+            ->addProperty(new Property("__bounceBeanFactory", "null", "private"))
             ->addMethod($constructorBuilder->getMethod());
 
         foreach ($definition->lookupMethods as $lookup) {
