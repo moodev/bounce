@@ -132,6 +132,10 @@ class XmlApplicationContextTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("simpleString", $parentBean->child->simpleString);
     }
 
+    /**
+     * @expectedException \MooDev\Bounce\Exception\BounceException
+     * @expectedExceptionMessage Infinite recursion import detected
+     */
     public function testObviousImportLoop()
     {
         if (!defined("DOC_DIR")) {
@@ -141,14 +145,13 @@ class XmlApplicationContextTest extends \PHPUnit_Framework_TestCase
             define("SIMPLE_CONSTANT", "Hello!");
         }
         $xmlFile = __DIR__ . "/selfImporting.xml";
-        try {
-            new XmlApplicationContext($xmlFile);
-            $this->fail("No exception for infinite loop");
-        } catch (BounceException $e) {
-            $this->assertEquals(0, strpos($e->getMessage(), "Infinite recursion import detected"));
-        }
+        new XmlApplicationContext($xmlFile);
     }
 
+    /**
+     * @expectedException \MooDev\Bounce\Exception\BounceException
+     * @expectedExceptionMessage Infinite recursion import detected
+     */
     public function testTransitiveImportLoop()
     {
         if (!defined("DOC_DIR")) {
@@ -158,12 +161,7 @@ class XmlApplicationContextTest extends \PHPUnit_Framework_TestCase
             define("SIMPLE_CONSTANT", "Hello!");
         }
         $xmlFile = __DIR__ . "/loopParent.xml";
-        try {
-            new XmlApplicationContext($xmlFile);
-            $this->fail("No exception for infinite loop");
-        } catch (BounceException $e) {
-            $this->assertEquals(0, strpos($e->getMessage(), "Infinite recursion import detected"));
-        }
+        new XmlApplicationContext($xmlFile);
     }
 
     public function testCustomNS() {
