@@ -3,3 +3,5 @@ atlassian-ide-plugin.xml
 .buildpath
 .project
 .settings
+vendor/
+composer.lock
