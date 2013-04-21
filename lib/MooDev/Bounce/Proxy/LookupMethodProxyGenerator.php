@@ -10,6 +10,7 @@ use MooDev\Bounce\Config\Bean;
 use MooDev\Bounce\Exception\BounceException;
 use MooDev\Bounce\Proxy\CG\CallBuilder;
 use MooDev\Bounce\Proxy\CG\ClassBuilder;
+use MooDev\Bounce\Proxy\CG\DClass;
 use MooDev\Bounce\Proxy\CG\MethodBuilder;
 use MooDev\Bounce\Proxy\CG\Param;
 use MooDev\Bounce\Proxy\CG\Property;
@@ -50,9 +51,15 @@ class LookupMethodProxyGenerator {
         }
     }
 
+    /**
+     * Take a string and make a new string that's safe for use to use in file and class names.
+     * @param string $str
+     * @return string
+     */
     protected function _makeSafeStr($str) {
+        // LAAAAME.
         $str = base64_encode($str);
-        $str = strtr($str, '=+', "\x80\x81");
+        $str = strtr($str, '=+/', "___");
         return $str;
     }
 
@@ -80,11 +87,12 @@ class LookupMethodProxyGenerator {
      */
     public function loadProxy(Bean $definition) {
         $fullName = $this->_fullyQualifiedClassName($definition->name);
+
         if (!class_exists($fullName, false)) {
-            // OK, we need to include it
             $rClass = new \ReflectionClass($definition->class);
 
             $file = $this->_nameToFilename($this->_nameForProxy($definition->name));
+            /** @noinspection PhpIncludeInspection */
             if (($rClass->getFileName() !== false && filemtime($rClass->getFileName()) >= @filemtime($file)) ||
                     !@include($file) ||
                     !class_exists($fullName, false)) {
@@ -92,10 +100,68 @@ class LookupMethodProxyGenerator {
                 $tmpFile = $this->generateProxy($definition, $rClass);
                 @rename($tmpFile, $file);
                 // This time we should require it, as it really ought to be there.
+                /** @noinspection PhpIncludeInspection */
                 require($file);
             }
         }
         return $fullName;
+    }
+
+    /**
+     * Generate a proxy class.
+     * @param Bean $definition Bean to create the proxy for.
+     * @param \ReflectionClass $rClass The class we're proxying (if null, we'll use the Bean's class.)
+     * @return DClass the generated class.
+     * @throws \MooDev\Bounce\Exception\BounceException
+     */
+    public function generateProxyClass(Bean $definition, \ReflectionClass $rClass = null) {
+        $proxyName = $this->_nameForProxy($definition->name);
+        if (!isset($rClass)) {
+            $rClass = new \ReflectionClass($definition->class);
+        }
+
+        // We want to generate a proxy which wraps the super's constructor, with an extra bonus param containing
+        // our BeanFactory. We can store that on a property, and implement our lookup methods using it.
+
+        $classBuilder = ClassBuilder::build($proxyName, $this->_namespaceForProxy())
+            ->extend('\\' . $rClass->getName())
+            ->addProperty(new Property("__bounceBeanFactory", "null", "private"));
+
+        $constructorBuilder = MethodBuilder::build("__construct")
+            ->addParam(new Param("__bounceBeanFactory", false, null, '\MooDev\Bounce\Context\BeanFactory'))
+            ->addLine('$this->__bounceBeanFactory = $__bounceBeanFactory;');
+
+        $rCon = $rClass->getConstructor();
+        if (isset($rCon)) {
+            // We need to add all of the super's constructor params to our constructor, and call parent::__construct.
+
+            $rParams = $rCon->getParameters();
+            $superCallBuilder = CallBuilder::build("parent::__construct");
+            foreach ($rParams as $param) {
+                $superCallBuilder->addParam('$' . $param->getName());
+                $constructorBuilder->addParam(
+                    new Param(
+                        $param->getName(),
+                        $param->isOptional(),
+                        ($param->isOptional() ? $param->getDefaultValue() : "null"),
+                        null, // Type hint information isn't available from ReflectionParameter for some reason :-(
+                        $param->isPassedByReference()));
+            }
+
+            $constructorBuilder->addLine($superCallBuilder->getCall() . ';');
+        }
+
+        $classBuilder->addMethod($constructorBuilder->getMethod());
+
+        // And finally, let's implement the lookup methods we've been asked for.
+        // These simply call createByName() on the BeanFactory.
+        foreach ($definition->lookupMethods as $lookup) {
+            $classBuilder->addMethod(MethodBuilder::build($lookup->name)
+                ->addLine('return $this->__bounceBeanFactory->createByName(\'' . $lookup->bean . '\');'."\n")
+                ->getMethod());
+        }
+
+        return $classBuilder->getClass();
     }
 
     /**
@@ -106,41 +172,12 @@ class LookupMethodProxyGenerator {
      * @throws \MooDev\Bounce\Exception\BounceException
      */
     public function generateProxy(Bean $definition, \ReflectionClass $rClass = null) {
-        $proxyName = $this->_nameForProxy($definition->name);
-        if (!isset($rClass)) {
-            $rClass = new \ReflectionClass($definition->class);
-        }
 
-        $constructorBuilder = MethodBuilder::build("__construct")
-            ->addParam(new Param("__bounceBeanFactory", false, null, '\MooDev\Bounce\Context\BeanFactory'))
-            ->addLine('$this->__bounceBeanFactory = $__bounceBeanFactory;');
+        // Get a Class for our proxy.
+        $class = $this->generateProxyClass($definition, $rClass);
 
-        $rCon = $rClass->getConstructor();
-        if (isset($rCon)) {
-            $rParams = $rCon->getParameters();
-            $superCallBuilder = CallBuilder::build("parent::__construct");
-            foreach ($rParams as $param) {
-                if ($param->isPassedByReference()) {
-                    throw new BounceException("Cannot proxy methods which require pass by reference");
-                }
-                $superCallBuilder->addParam('$' . $param->getName());
-                $constructorBuilder->addParam(new Param($param->getName(), $param->isOptional(), ($param->isOptional() ? $param->getDefaultValue() : false)));
-            }
-            $constructorBuilder->addLine($superCallBuilder->getCall() . ';');
-        }
-
-        $classBuilder = ClassBuilder::build($proxyName, $this->_namespaceForProxy())
-            ->extend('\\' . $rClass->getName())
-            ->addProperty(new Property("__bounceBeanFactory", "null", "private"))
-            ->addMethod($constructorBuilder->getMethod());
-
-        foreach ($definition->lookupMethods as $lookup) {
-            $classBuilder->addMethod(MethodBuilder::build($lookup->name)
-                ->addLine('return $this->__bounceBeanFactory->createByName(\'' . $lookup->bean . '\');'."\n")
-                ->getMethod());
-        }
-
-        $file = $this->_nameToFilename($proxyName);
+        // And write it to the right file.
+        $file = $this->_nameToFilename($this->_nameForProxy($definition->name));
         $baseDir = dirname($file);
         @mkdir($baseDir, 0777, true);
 
@@ -148,7 +185,7 @@ class LookupMethodProxyGenerator {
         if ($tmpFile === false) {
             throw new BounceException("Unable to write proxy temp file");
         }
-        $code = '<?php'."\n\n".$classBuilder->getClass();
+        $code = '<?php'."\n\n".$class;
         $wrote = file_put_contents($tmpFile, $code);
         if ($wrote != strlen($code)) {
             unlink($tmpFile);
