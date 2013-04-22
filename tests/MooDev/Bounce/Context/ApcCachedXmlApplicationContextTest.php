@@ -12,6 +12,19 @@ require_once __DIR__ . '/../../../TestInit.php';
  */
 class ApcCachedXmlApplicationContextTest extends \PHPUnit_Framework_TestCase
 {
+
+    /**
+     * This test case's results are only valid if APC is enabled and functional.
+     */
+    public function testTestConfig()
+    {
+        $this->assertTrue(function_exists("apc_fetch"), "APC module is not loaded.");
+        $this->assertTrue(ini_get("apc.enable_cli") == true, "apc.enable_cli must be enabled in your php.ini");
+    }
+
+    /**
+     * @depends testTestConfig
+     */
     public function testLoadFullXml()
     {
         if (!defined("DOC_DIR")) {
@@ -37,6 +50,9 @@ class ApcCachedXmlApplicationContextTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($one->explicitBool);
     }
 
+    /**
+     * @depends testTestConfig
+     */
     public function testLoadFullXmlTwice()
     {
         if (!defined("DOC_DIR")) {

@@ -3,6 +3,7 @@
  * @author Jonathan Oddy <jonathan@moo.com>
  * @copyright Copyright (c) 2012, MOO Print Ltd.
  * @license ISC
+ * @deprecated Install using composer, use the composer autoloader.
  */
 namespace MooDev;
 

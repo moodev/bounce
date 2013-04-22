@@ -17,25 +17,24 @@ use MooDev\Bounce\Exception\BounceException;
 class BeanFactoryTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @expectedException \MooDev\Bounce\Exception\BounceException
+     * @expectedExceptionMessage Invalid contextConfig. Must be a Config\Context instance
+     */
     public function testConfigGuards()
     {
         $impl = BeanFactory::getInstance(new Config\Context());
-        try {
-            $impl->contextConfig = new BounceException();
-        } catch (BounceException $e) {
-            $this->assertEquals("Invalid contextConfig. Must be a Config\Context instance", $e->getMessage());
-        }
-        $impl->contextConfig = new Config\Context();
+        $impl->contextConfig = new BounceException();
     }
 
+    /**
+     * @expectedException \MooDev\Bounce\Exception\BounceException
+     * @expectedExceptionMessage No object defined with name bean
+     */
     public function testEmptyConfig()
     {
         $impl = BeanFactory::getInstance(new Config\Context());
-        try {
-            $impl->createByName("bean");
-        } catch (BounceException $e) {
-            $this->assertEquals("No object defined with name bean", $e->getMessage());
-        }
+        $impl->createByName("bean");
     }
 
     public function testSimpleInstantiate()
@@ -81,6 +80,7 @@ class BeanFactoryTest extends \PHPUnit_Framework_TestCase
 
         try {
             $beanFactory->createByName("steve");
+            $this->fail("Was able to create bean by non-existent name");
         } catch (BounceException $e) {
             $this->assertEquals("No object defined with name steve", $e->getMessage());
         }
@@ -108,6 +108,7 @@ class BeanFactoryTest extends \PHPUnit_Framework_TestCase
 
         try {
             $beanFactory->createByName("steve");
+            $this->fail("Was able to create bean by non-existent name");
         } catch (BounceException $e) {
             $this->assertEquals("No object defined with name steve", $e->getMessage());
         }
@@ -150,8 +151,8 @@ class BeanFactoryTest extends \PHPUnit_Framework_TestCase
         $context->beans["out"] = $bean;
         $bean->lookupMethods = array(new Config\LookupMethod("getInner", "in"));
         $bean->constructorArguments = array(
-                 new \MooDev\Bounce\Config\SimpleValueProvider("hello"),
-                 new \MooDev\Bounce\Config\SimpleValueProvider("world")
+                 new Config\SimpleValueProvider("hello"),
+                 new Config\SimpleValueProvider("world")
             );
 
 
