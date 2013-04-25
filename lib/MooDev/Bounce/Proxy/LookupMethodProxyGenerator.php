@@ -66,7 +66,7 @@ class LookupMethodProxyGenerator {
         // Yeah, so, err, let's use a Base32 variant to encode our string.
         $modulus = 0;
         $bitWorkArea = 0;
-        $out = "";
+        $out = "b"; // need to make sure the first char of the string is valid for a class name.
         $mask = 0x1f;
         foreach (str_split($str) as $chr) {
             $modulus = ($modulus + 1) % 5;
