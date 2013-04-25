@@ -4,6 +4,5 @@ php:
   - "5.3"
 before_script:
   - echo "extension = apc.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - phpenv config-add tests/travisconfig.ini
   - composer install --dev
 script: "phpunit --coverage-text tests"
