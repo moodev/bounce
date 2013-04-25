@@ -6,4 +6,4 @@ php:
 before_script:
   - phpenv config-add tests/travisconfig.ini
   - composer install --dev
-script: "phpunit --coverage-text --bootstrap tests/bootstrap.php tests"
+script: "phpunit --coverage-text tests"
