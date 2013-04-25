@@ -1,5 +1,6 @@
 Bounce
 ======
+[![Build Status](https://travis-ci.org/moodev/bounce.png)](https://travis-ci.org/moodev/bounce)
 
 Bounce is a dependency injection framework for PHP, similar to a sub-set of Spring.
 
