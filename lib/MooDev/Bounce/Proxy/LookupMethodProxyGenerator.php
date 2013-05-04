@@ -37,12 +37,6 @@ class LookupMethodProxyGenerator {
      */
     private $_uniqueId;
 
-    private static $_BASE32MAP = array(
-        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A",
-        "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
-        "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
-    );
-
     /**
      * @param string $proxyDir Directory under which the proxies will be created.
      * @param string $proxyNS Namespace under which the proxies will be created.
@@ -63,55 +57,7 @@ class LookupMethodProxyGenerator {
      * @return string
      */
     protected function _makeSafeStr($str) {
-        // Yeah, so, err, let's use a Base32 variant to encode our string.
-        $modulus = 0;
-        $bitWorkArea = 0;
-        $out = "";
-        $mask = 0x1f;
-        foreach (str_split($str) as $chr) {
-            $modulus = ($modulus + 1) % 5;
-            $b = ord($chr);
-            $bitWorkArea = ($bitWorkArea << 8) + $b;
-            if ($modulus == 0) {
-                $out .= base_convert(($bitWorkArea >> 35) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >> 30) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >> 25) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >> 20) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >> 15) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >> 10) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >> 5) & $mask, 10, 32);
-                $out .= base_convert($bitWorkArea & $mask, 10, 32);
-            }
-        }
-        switch ($modulus) {
-            case 1 :
-                $out .= base_convert(($bitWorkArea >> 3) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea << 2) & $mask, 10, 32);
-                break;
-            case 2 :
-                $out .= base_convert(($bitWorkArea >> 11) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >>  6) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >>  1) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea <<  4) & $mask, 10, 32);
-                break;
-            case 3 :
-                $out .= base_convert(($bitWorkArea >> 19) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >> 14) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >>  9) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >>  4) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea <<  1) & $mask, 10, 32);
-                break;
-            case 4 :
-                $out .= base_convert(($bitWorkArea >> 27) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >> 22) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >> 17) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >> 12) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >>  7) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea >>  2) & $mask, 10, 32);
-                $out .= base_convert(($bitWorkArea <<  3) & $mask, 10, 32);
-                break;
-        }
-        return $out;
+        return Utils\Base32Hex::encode($str);
     }
 
     protected function _nameForProxy($beanName) {
