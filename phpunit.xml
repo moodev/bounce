@@ -1,0 +1,17 @@
+<phpunit backupGlobals="false">
+    <!-- Define where our tests are -->
+    <testsuite name="moodev-bounce component">
+        <directory>tests</directory>
+    </testsuite>
+    <listeners>
+        <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
+    </listeners>
+    <!-- Define the filtering so we only measure code coverage on our
+our code - don't include anything in the lib dir. More specifically
+we only whitelist the lib tree -->
+    <filter>
+        <whitelist>
+            <directory suffix=".php">lib</directory>
+        </whitelist>
+    </filter>
+</phpunit>
