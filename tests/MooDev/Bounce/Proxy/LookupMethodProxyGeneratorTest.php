@@ -117,10 +117,9 @@ class LookupMethodProxyGeneratorTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($rClass->hasMethod("getThingy"));
         $this->assertEquals(0, $rClass->getMethod("getThingy")->getNumberOfParameters());
 
-        $mockBeanFactory = m::mock('\MooDev\Bounce\Context\BeanFactory')
-            ->shouldReceive("createByName")->with("in")->andReturn("wheeee")
-            ->shouldReceive("createByName")->with("thingy")->andReturn("wooooo")
-            ->mock();
+        $mockBeanFactory = m::mock('\MooDev\Bounce\Context\BeanFactory');
+        $mockBeanFactory->shouldReceive("createByName")->with("in")->andReturn("wheeee");
+        $mockBeanFactory->shouldReceive("createByName")->with("thingy")->andReturn("wooooo");
 
         /**
          * @var ProxyTestClass $instance
