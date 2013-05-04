@@ -57,7 +57,8 @@ class LookupMethodProxyGenerator {
      * @return string
      */
     protected function _makeSafeStr($str) {
-        return Utils\Base32Hex::encode($str);
+        // Prefix with a letter to ensure that we meet the rules for PHP class names.
+        return "B" . Utils\Base32Hex::encode($str);
     }
 
     protected function _nameForProxy($beanName) {
