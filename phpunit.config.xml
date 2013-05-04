@@ -3,7 +3,9 @@
     <testsuite name="moodev-bounce component">
         <directory>tests</directory>
     </testsuite>
-
+    <listeners>
+        <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
+    </listeners>
     <!-- Define how everything should be logged -->
     <logging>
         <log type="coverage-html" target="build/coverage" title="moocommon-infra"
