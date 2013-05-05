@@ -9,6 +9,7 @@ namespace MooDev\Bounce\Context;
 
 use MooDev\Bounce\Exception\BounceException;
 use MooDev\Bounce\Config;
+use MooDev\Bounce\Proxy\ProxyGeneratorFactory;
 use SimpleXMLElement;
 use MooDev\Bounce\Xml\TypeSafeParser;
 

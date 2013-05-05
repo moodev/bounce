@@ -8,6 +8,7 @@ namespace MooDev\Bounce\Context;
 require_once __DIR__ . '/../../../TestInit.php';
 
 use MooDev\Bounce\Config;
+use MooDev\Bounce\Proxy\ProxyGeneratorFactory;
 use stdClass;
 use MooDev\Bounce\Exception\BounceException;
 
@@ -16,6 +17,11 @@ use MooDev\Bounce\Exception\BounceException;
  */
 class BeanFactoryTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function setUp() {
+        parent::setUp();
+        BeanFactory::$proxyGeneratorFactory = new ProxyGeneratorFactory();
+    }
 
     /**
      * @expectedException \MooDev\Bounce\Exception\BounceException
@@ -132,7 +138,6 @@ class BeanFactoryTest extends \PHPUnit_Framework_TestCase
         $impl = BeanFactory::getInstance($context);
         $o = $impl->createByName("out");
         $this->assertEquals("jon", $o->getInner()->test);
-
 
     }
 
