@@ -410,20 +410,26 @@ class BeanFactory
      */
     protected function _getChildContextFor($name, Config\Context $parentContext)
     {
-        if (!array_key_exists($name, $this->_childContextsByName)) {
-            //We need to find the answer. We default to null
-            $this->_childContextsByName[$name] = null;
-            foreach ($parentContext->childContexts as $context) {
-                if (array_key_exists($name, $context->beans)) {
-                    $this->_childContextsByName[$name] = $context;
-                }
-                //Otherwise see if it has this bean in one of its child contexts
-                $grandChildContext = $this->_getChildContextFor($name, $context);
-                if (!is_null($grandChildContext)) {
-                    $this->_childContextsByName[$name] = $grandChildContext;
-                }
+        if (array_key_exists($name, $this->_childContextsByName)) {
+            return $this->_childContextsByName[$name];
+        }
+
+        $matchingContext = null;
+
+        //We need to find the answer. We default to null
+        foreach ($parentContext->childContexts as $context) {
+            if (array_key_exists($name, $context->beans)) {
+                $matchingContext = $context;
+                break;
+            }
+            //Otherwise see if it has this bean in one of its child contexts
+            $grandChildContext = $this->_getChildContextFor($name, $context);
+            if (!is_null($grandChildContext)) {
+                $matchingContext = $grandChildContext;
+                break;
             }
         }
+        $this->_childContextsByName[$name] = $matchingContext;
         return $this->_childContextsByName[$name];
     }
 }

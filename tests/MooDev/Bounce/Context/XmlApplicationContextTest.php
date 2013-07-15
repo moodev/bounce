@@ -132,6 +132,20 @@ class XmlApplicationContextTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("simpleString", $parentBean->child->simpleString);
     }
 
+    public function testImportChain()
+    {
+        if (!defined("DOC_DIR")) {
+            define("DOC_DIR", realpath(__DIR__ . '/../../../'));
+        }
+        if (!defined("SIMPLE_CONSTANT")) {
+            define("SIMPLE_CONSTANT", "Hello!");
+        }
+        $xmlFile = __DIR__ . "/grandparent.xml";
+        $xmlContext = new XmlApplicationContext($xmlFile);
+        $grandParentBean = $xmlContext->get("grandParentBean");
+        $this->assertEquals("simpleString", $grandParentBean->grandchild->simpleString);
+    }
+
     /**
      * @expectedException \MooDev\Bounce\Exception\BounceException
      * @expectedExceptionMessage Infinite recursion import detected
