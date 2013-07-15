@@ -8,6 +8,8 @@
 namespace MooDev\Bounce\Context;
 
 use \MooDev\Bounce\Config;
+use MooDev\Bounce\Proxy\LookupMethodProxyGenerator;
+use MooDev\Bounce\Proxy\ProxyGeneratorFactory;
 use ReflectionObject;
 use ReflectionClass;
 use \MooDev\Bounce\Exception\BounceException;
@@ -25,7 +27,12 @@ class BeanFactory
      * @var string -> BeanFactory instances 
      */
     private static $_globalFactories = array();
-    
+
+    /**
+     * @var ProxyGeneratorFactory
+     */
+    public static $proxyGeneratorFactory;
+
     /**
      * Returns an instance of the BeanFactory, using the globally shared version
      * if applicable.
@@ -36,22 +43,33 @@ class BeanFactory
      */
     public static function getInstance(Config\Context $context, $globalShared = true)
     {
+        if (!isset(self::$proxyGeneratorFactory)) {
+            self::$proxyGeneratorFactory = new ProxyGeneratorFactory();
+        }
+        $uniqueId = null;
         //Do we have a unique ID? If not, then we're not shared.
         if ($globalShared && !is_null($context->uniqueId)) {
-            //If we're not in the shared list yet, make it so
-            if (!array_key_exists($context->uniqueId, self::$_globalFactories)) {
-                $factory = new BeanFactory();
-                $factory->_contextConfig = $context;
-                //Remember this in the shared cache
-                self::$_globalFactories[$context->uniqueId] = $factory;
+            $uniqueId = $context->uniqueId;
+            if (isset(self::$_globalFactories[$uniqueId])) {
+                return self::$_globalFactories[$uniqueId];
             }
-            return self::$_globalFactories[$context->uniqueId];
-        } else {
-            $factory = new BeanFactory();
-            $factory->_contextConfig = $context;
-            return $factory;
         }
+
+        $factory = new BeanFactory();
+        $factory->_contextConfig = $context;
+        $factory->_lookupMethodProxyGenerator = self::$proxyGeneratorFactory->getLookupMethodProxyGenerator($uniqueId);
+
+        if ($uniqueId !== null) {
+            //Remember this in the shared cache
+            self::$_globalFactories[$context->uniqueId] = $factory;
+        }
+        return $factory;
     }
+
+    /**
+     * @var LookupMethodProxyGenerator
+     */
+    protected $_lookupMethodProxyGenerator;
 
     /**
      * @var Config\Context the Context data to be used to create
@@ -275,86 +293,8 @@ class BeanFactory
         }
     }
 
-    protected function _createProxy($class, $proxyNS, $proxyClass, $definition) {
-
-        $rClass = new \ReflectionClass($class);
-        $className = '\\' . $rClass->getName();
-        $rCon = $rClass->getConstructor();
-        $constructorSig = 'public function __construct($__bounceBeanFactory';
-        $callParent = '';
-        if (isset($rCon)) {
-            $callParent = 'parent::__construct(';
-            $rParams = $rCon->getParameters();
-            $params = array();
-            foreach ($rParams as $param) {
-                $params[] = $param->getName();
-            }
-            if (!empty($params)) {
-                $paramStr = '$' . implode(', $', $params);
-                $callParent .= $paramStr;
-                $constructorSig .= ', ' . $paramStr;
-            }
-            $callParent .= ');';
-        }
-        $constructorSig .= ')';
-
-        $proxyClassCode = "<?php\n\nnamespace ".$proxyNS.";\n\nclass " . $proxyClass . " extends " . $className . " {\n    private \$__bounceBeanFactory;\n\n";
-
-        $proxyClassCode .= "    " . $constructorSig . " {\n";
-        $proxyClassCode .= '        $this->__bounceBeanFactory = $__bounceBeanFactory;' . "\n";
-        $proxyClassCode .= "        " . $callParent . "\n";
-        $proxyClassCode .= "    }\n\n";
-
-        foreach ($definition->lookupMethods as $lookup) {
-
-            $proxyClassCode .= "    public function " . $lookup->name . "() {\n";
-            $proxyClassCode .= "        return \$this->__bounceBeanFactory->createByName('" . $lookup->bean . "');\n";
-            $proxyClassCode .= "    }\n\n";
-        }
-
-        $proxyClassCode .= "\n}\n\n";
-
-
-        // TODO: configurable proxy dir
-        $proxyDir = sys_get_temp_dir() . '/bnceprox/';
-        @mkdir($proxyDir);
-
-        $tmpFile = tempnam($proxyDir, $proxyClass);
-        if ($tmpFile === false) {
-            throw new BounceException("Unable to write proxy temp file");
-        }
-        $wrote = file_put_contents($tmpFile, $proxyClassCode);
-        if ($wrote != strlen($proxyClassCode)) {
-            unlink($tmpFile);
-            throw new BounceException("Unable to write proxy temp file. Wrote $wrote bytes but expected " . strlen($proxyClassCode));
-        }
-        return $tmpFile;
-    }
-
-    protected function _loadProxy(Config\Bean $definition) {
-
-        $class = $definition->class;
-
-        $proxyNS = 'MooDev\Bounce\Temp\Proxy';
-        $safeClass = preg_replace('/[^a-zA-Z0-9_\x7f-\xff]/', '_', $class);
-        $proxyClass = "Bounce_Proxy_" . $safeClass . "_";
-
-        // TODO: reuse of proxies
-        do {
-            $proxyClass .= mt_rand(0, 9);
-            $fullName = '\\' . $proxyNS . '\\' . $proxyClass;
-        } while (class_exists($fullName, false));
-
-
-        $fileName = $this->_createProxy($class, $proxyNS, $proxyClass, $definition);
-        /** @noinspection PhpIncludeInspection */
-        require($fileName);
-
-        return $fullName;
-    }
-
     protected function _instantiateViaProxy(Config\Bean $definition, $args) {
-        $proxyName = $this->_loadProxy($definition);
+        $proxyName = $this->_lookupMethodProxyGenerator->loadProxy($definition);
 
         array_unshift($args, $this);
 
