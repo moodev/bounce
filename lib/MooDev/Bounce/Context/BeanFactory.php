@@ -372,4 +372,26 @@ class BeanFactory
         $this->_childContextsByName[$name] = $matchingContext;
         return $this->_childContextsByName[$name];
     }
+
+    protected function _getAllBeanClassesRecursive(Config\Context $context) {
+        $names = array();
+
+        foreach ($context->childContexts as $child) {
+            $names = array_merge($this->_getAllBeanClassesRecursive($child), $names);
+        }
+
+        foreach ($context->beans as $beanName => $bean) {
+            $names[$beanName] = $bean->class;
+        }
+
+        return $names;
+    }
+
+    /**
+     * @return string[] Map from bean names to their class (if known, null if not known.)
+     */
+    public function getAllBeanClasses()
+    {
+        return $this->_getAllBeanClassesRecursive($this->_contextConfig);
+    }
 }
