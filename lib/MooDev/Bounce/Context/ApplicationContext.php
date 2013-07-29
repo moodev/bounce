@@ -32,4 +32,13 @@ class ApplicationContext
     {
         return $this->_beanFactory->createByName($name);
     }
+
+    /**
+     * @return string[] Map from bean names to their class (if known, null if not known.)
+     */
+    public function getAllBeanClasses()
+    {
+        return $this->_beanFactory->getAllBeanClasses();
+    }
+
 }

@@ -132,6 +132,20 @@ class XmlApplicationContextTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("simpleString", $parentBean->child->simpleString);
     }
 
+    public function testGetBeanClasses()
+    {
+        if (!defined("DOC_DIR")) {
+            define("DOC_DIR", realpath(__DIR__ . '/../../../'));
+        }
+        if (!defined("SIMPLE_CONSTANT")) {
+            define("SIMPLE_CONSTANT", "Hello!");
+        }
+        $xmlFile = __DIR__ . "/parent.xml";
+        $xmlContext = new XmlApplicationContext($xmlFile);
+        $this->assertEquals(array("childBean" => "StdClass", "parentBean" => "StdClass"), $xmlContext->getAllBeanClasses());
+
+    }
+
     public function testImportChain()
     {
         if (!defined("DOC_DIR")) {
