@@ -14,25 +14,24 @@ namespace MooDev\Bounce\Proxy;
  */
 class ProxyGeneratorFactory {
 
-    private $_proxyNamespace;
-    private $_tempDir;
+    private $_proxyStore;
 
     /**
-     * @param string $tempDir Temp directory to put proxies in. Default is to create a new directory.
+     * @param ProxyStore $proxyStore Thing we can store proxies in.
      * @param string $proxyNamespace Namespace under which to create proxy classes.
      */
-    public function __construct($tempDir = null, $proxyNamespace = 'MooDev\Bounce\Proxy\Generated'){
-        if (!isset($tempDir)) {
-            // OK, we'll create ourselves a unique temp dir.
-            do {
-                $path = tempnam(sys_get_temp_dir(), 'bounce_');
-                unlink($path);
-            } while (!@mkdir($path)); // If this failed, we lost a race. Try again.
-            $tempDir = $path;
-            $proxyNamespace .= '\\' . strtr(basename($tempDir), '.', '_');
+    public function __construct($proxyStore = null, $proxyNamespace = 'MooDev\Bounce\Proxy\Generated'){
+        if (is_string($proxyStore)) {
+            // Urgh, deprecated usage
+            trigger_error("Passing a temp dir to the ProxyGeneratorFactory is deprecated", E_USER_DEPRECATED);
+            $proxyStore = new Store\FilesProxyStore($proxyStore);
         }
-        $this->_tempDir = $tempDir;
-        $this->_proxyNamespace = $proxyNamespace;
+        if ($proxyStore === null) {
+            // Default behaviour
+            $proxyStore = new Store\InMemoryProxyStore();
+        }
+        $this->_proxyStore = $proxyStore;
+        $this->_proxyStore->setBaseProxyNamespace($proxyNamespace);
     }
 
     /**
@@ -41,9 +40,7 @@ class ProxyGeneratorFactory {
      * @return LookupMethodProxyGenerator
      */
     public function getLookupMethodProxyGenerator($uniqueId) {
-
-        return new LookupMethodProxyGenerator($this->_tempDir, $this->_proxyNamespace, $uniqueId);
-
+        return new LookupMethodProxyGenerator($this->_proxyStore, $uniqueId);
     }
 
 }
