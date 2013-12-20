@@ -7,7 +7,6 @@
 namespace MooDev\Bounce\Proxy;
 
 use MooDev\Bounce\Config\Bean;
-use MooDev\Bounce\Exception\BounceException;
 use MooDev\Bounce\Proxy\CG\CallBuilder;
 use MooDev\Bounce\Proxy\CG\ClassBuilder;
 use MooDev\Bounce\Proxy\CG\DClass;
@@ -23,14 +22,9 @@ use MooDev\Bounce\Proxy\CG\Property;
 class LookupMethodProxyGenerator {
 
     /**
-     * @var string
+     * @var ProxyStore
      */
-    private $_proxyNS;
-
-    /**
-     * @var string
-     */
-    private $_proxyDir;
+    private $_proxyStore;
 
     /**
      * @var string
@@ -38,14 +32,12 @@ class LookupMethodProxyGenerator {
     private $_uniqueId;
 
     /**
-     * @param string $proxyDir Directory under which the proxies will be created.
-     * @param string $proxyNS Namespace under which the proxies will be created.
+     * @param ProxyStore $proxyStore Storage for proxies.
      * @param string $uniqueId string which will be added to the directory and namespace.
      */
-    function __construct($proxyDir, $proxyNS, $uniqueId)
+    function __construct(ProxyStore $proxyStore, $uniqueId)
     {
-        $this->_proxyDir = $proxyDir;
-        $this->_proxyNS = $proxyNS;
+        $this->_proxyStore = $proxyStore;
         if (!empty($uniqueId)) {
             $this->_uniqueId = $this->_makeSafeStr($uniqueId);
         }
@@ -67,11 +59,7 @@ class LookupMethodProxyGenerator {
 
     protected function _namespaceForProxy()
     {
-        return $this->_proxyNS . (isset($this->_uniqueId) ? ('\\' . $this->_uniqueId) : '');
-    }
-
-    protected function _nameToFilename($proxyName) {
-        return $this->_proxyDir . DIRECTORY_SEPARATOR . (isset($this->_uniqueId) ? ($this->_uniqueId  . DIRECTORY_SEPARATOR) : '') . $proxyName . '.php';
+        return $this->_proxyStore->getProxyNamespace() . (isset($this->_uniqueId) ? ('\\' . $this->_uniqueId) : '');
     }
 
     protected function _fullyQualifiedClassName($beanName)
@@ -88,18 +76,12 @@ class LookupMethodProxyGenerator {
 
         if (!class_exists($fullName, false)) {
             $rClass = new \ReflectionClass($definition->class);
-
-            $file = $this->_nameToFilename($this->_nameForProxy($definition->name));
-            /** @noinspection PhpIncludeInspection */
-            if (($rClass->getFileName() !== false && filemtime($rClass->getFileName()) >= @filemtime($file)) ||
-                    !@include($file) ||
-                    !class_exists($fullName, false)) {
-                // File out of date (or was internal), or could not include the file, or it didn't define our proxy. Regenerate it.
-                $tmpFile = $this->generateProxy($definition, $rClass);
-                @rename($tmpFile, $file);
-                // This time we should require it, as it really ought to be there.
-                /** @noinspection PhpIncludeInspection */
-                require($file);
+            $proxyName = $this->_nameForProxy($definition->name);
+            $lastModified = filemtime($rClass->getFileName());
+            if (!$this->_proxyStore->import($proxyName, $this->_uniqueId, $lastModified) || !class_exists($fullName, false)) {
+                // Stored version out of date (or was internal), or could not include it, or it didn't define our proxy. Regenerate it.
+                $code = $this->generateProxyClass($definition, $rClass);
+                $this->_proxyStore->storeAndImport($this->_uniqueId, $proxyName, $code, $lastModified);
             }
         }
         return $fullName;
@@ -160,36 +142,6 @@ class LookupMethodProxyGenerator {
         }
 
         return $classBuilder->getClass();
-    }
-
-    /**
-     * Generate a proxy class and write it to a file.
-     * @param Bean $definition Bean to create the proxy for.
-     * @param \ReflectionClass $rClass The class we're proxying (if null, we'll use the Bean's class.)
-     * @return string Full path to a file containing the generated class.
-     * @throws \MooDev\Bounce\Exception\BounceException
-     */
-    public function generateProxy(Bean $definition, \ReflectionClass $rClass = null) {
-
-        // Get a Class for our proxy.
-        $class = $this->generateProxyClass($definition, $rClass);
-
-        // And write it to the right file.
-        $file = $this->_nameToFilename($this->_nameForProxy($definition->name));
-        $baseDir = dirname($file);
-        @mkdir($baseDir, 0777, true);
-
-        $tmpFile = tempnam($baseDir, basename($file));
-        if ($tmpFile === false) {
-            throw new BounceException("Unable to write proxy temp file");
-        }
-        $code = '<?php'."\n\n".$class;
-        $wrote = file_put_contents($tmpFile, $code);
-        if ($wrote != strlen($code)) {
-            unlink($tmpFile);
-            throw new BounceException("Unable to write proxy temp file. Wrote $wrote bytes but expected " . strlen($code));
-        }
-        return $tmpFile;
     }
 
 }
