@@ -87,8 +87,9 @@ abstract class FilesystemProxyStore implements ProxyStore {
     public function getProxyNamespace()
     {
         if ($this->_proxyNamespace === null) {
-            $this->_proxyNamespace = $this->_baseProxyNamespace . '\C' . Base32Hex::encode($this->_getProxyDir());
+            $this->_proxyNamespace = ltrim($this->_baseProxyNamespace . '\C' . Base32Hex::encode($this->_getProxyDir()), '\\');
         }
+        return $this->_proxyNamespace;
     }
 
 

@@ -18,5 +18,12 @@ class UniqTmpDirFilesystemProxyStoreTest extends \PHPUnit_Framework_TestCase {
         $this->assertFileNotExists(dirname($file)); // Check cleanup
     }
 
+    public function testDefaultNamespaceIsValid()
+    {
+        $store = new UniqTmpDirFilesystemProxyStore();
+        $ns = $store->getProxyNamespace();
+        eval("namespace $ns;");
+    }
+
 }
 

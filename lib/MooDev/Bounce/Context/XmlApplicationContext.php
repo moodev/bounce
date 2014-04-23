@@ -9,7 +9,6 @@ namespace MooDev\Bounce\Context;
 
 use MooDev\Bounce\Exception\BounceException;
 use MooDev\Bounce\Config;
-use MooDev\Bounce\Proxy\ProxyGeneratorFactory;
 use SimpleXMLElement;
 use MooDev\Bounce\Xml\TypeSafeParser;
 
@@ -158,7 +157,7 @@ class XmlApplicationContext extends ApplicationContext
         $bean->factoryBean = !is_null($factoryBean) ? strval($factoryBean) : null;
         $bean->factoryMethod = !is_null($factoryMethod) ? strval($factoryMethod) : null;
 
-        $bean->scope = isset($beanXml["scope"]) ? $beanXml["scope"] : null;
+        $bean->scope = isset($beanXml["scope"]) ? strval($beanXml["scope"]) : null;
 
         $bean->name = strval(!is_null($id) ? $id : $name);
 

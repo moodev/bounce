@@ -79,4 +79,19 @@
             </list>
         </property>
     </bean>
+
+    <bean id="three" class="StdClass" scope="prototype">
+        <property name="hi"><value>foo</value></property>
+    </bean>
+
+    <bean name="four" class="StdClass">
+        <property name="goats" ref="three" />
+        <property name="stoats">
+            <bean name="blar" class="StdClass" />
+        </property>
+    </bean>
+
+    <bean name="five" class="StdClass">
+        <lookup-method name="goats" bean="three" />
+    </bean>
 </beans>

@@ -19,6 +19,10 @@ class InMemoryProxyStore implements ProxyStore {
 
     private $_proxyNamespace;
 
+    public function __construct() {
+        $this->_proxyNamespace = 'H' . spl_object_hash($this);
+    }
+
     public function import($uniqueId, $name, $lastModified)
     {
         return true;
@@ -34,7 +38,7 @@ class InMemoryProxyStore implements ProxyStore {
 
     public function setBaseProxyNamespace($proxyNamespace)
     {
-        $this->_proxyNamespace = $proxyNamespace . '\H' . spl_object_hash($this);
+        $this->_proxyNamespace = ltrim($proxyNamespace . '\H' . spl_object_hash($this), '\\');
     }
 
     public function getProxyNamespace()
