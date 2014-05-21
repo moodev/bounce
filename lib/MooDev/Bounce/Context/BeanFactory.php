@@ -275,7 +275,7 @@ class BeanFactory
             $factoryMethod = $definition->factoryMethod;
             if (isset($definition->factoryBean)) {
                 // We need to look up the factory bean, then use it to create our instance.
-                $factoryBean = $this->createByName($definition->factoryBean, $referenceFactory);
+                $factoryBean = $referenceFactory->createByName($definition->factoryBean);
                 return $this->_instantiateByFactoryBean($factoryBean, $factoryMethod, $args);
             } else {
                 // We need to invoke a static factory on the named class

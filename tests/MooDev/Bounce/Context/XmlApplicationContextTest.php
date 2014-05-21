@@ -160,6 +160,48 @@ class XmlApplicationContextTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("simpleString", $grandParentBean->grandchild->simpleString);
     }
 
+    public function testResolutionViaSiblings()
+    {
+        if (!defined("DOC_DIR")) {
+            define("DOC_DIR", realpath(__DIR__ . '/../../../'));
+        }
+        if (!defined("SIMPLE_CONSTANT")) {
+            define("SIMPLE_CONSTANT", "Hello!");
+        }
+        $xmlFile = __DIR__ . "/parentOfTwo.xml";
+        $xmlContext = new XmlApplicationContext($xmlFile);
+        $elderBrotherBean = $xmlContext->get("elderBrotherBean");
+        $this->assertEquals("simpleString", $elderBrotherBean->sibling->simpleString);
+    }
+
+    public function testResolutionViaCodependentSiblings()
+    {
+        if (!defined("DOC_DIR")) {
+            define("DOC_DIR", realpath(__DIR__ . '/../../../'));
+        }
+        if (!defined("SIMPLE_CONSTANT")) {
+            define("SIMPLE_CONSTANT", "Hello!");
+        }
+        $xmlFile = __DIR__ . "/cofamily.xml";
+        $xmlContext = new XmlApplicationContext($xmlFile);
+        $a = $xmlContext->get("a");
+        $this->assertEquals("simpleString", $a->thing->thing->thing);
+    }
+
+    public function testResolutionViaParentFactory()
+    {
+        if (!defined("DOC_DIR")) {
+            define("DOC_DIR", realpath(__DIR__ . '/../../../'));
+        }
+        if (!defined("SIMPLE_CONSTANT")) {
+            define("SIMPLE_CONSTANT", "Hello!");
+        }
+        $xmlFile = __DIR__ . "/factoryParent.xml";
+        $xmlContext = new XmlApplicationContext($xmlFile);
+        $childBean = $xmlContext->get("childBean");
+        $this->assertEquals("simpleString", $childBean->getThing());
+    }
+
     /**
      * @expectedException \MooDev\Bounce\Exception\BounceException
      * @expectedExceptionMessage Infinite recursion import detected
@@ -264,3 +306,27 @@ class TestAdditionalProvider implements ValueTagProvider {
     }
 }
 
+class ParentBean {
+
+    public $thing;
+
+    public function getInstance()
+    {
+        return new ChildBean($this->thing);
+    }
+}
+
+class ChildBean {
+
+    private $thing;
+
+    public function __construct($thing)
+    {
+        $this->thing = $thing;
+    }
+
+    public function getThing()
+    {
+        return $this->thing;
+    }
+}
