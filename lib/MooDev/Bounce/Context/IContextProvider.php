@@ -1,16 +1,17 @@
 <?php
 /**
- * Created by IntelliJ IDEA.
- * User: jono
- * Date: 02/12/2015
- * Time: 11:37
+ * @author Jonathan Oddy <jonathan@moo.com>
+ * @copyright Copyright (c) 2015, MOO Print Ltd.
+ * @license ISC
  */
-
 namespace MooDev\Bounce\Context;
 
 use MooDev\Bounce\Config;
 use MooDev\Bounce\Exception\BounceException;
 
+/**
+ * Provider of bounce config contexts
+ */
 interface IContextProvider
 {
 
