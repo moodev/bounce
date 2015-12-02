@@ -15,8 +15,14 @@ namespace MooDev\Bounce\Context;
  */
 class ApplicationContext
 {
+
+    public function __construct(IBeanFactory $beanFactory)
+    {
+        $this->_beanFactory = $beanFactory;
+    }
+
     /**
-     * @var $_beanFactory BeanFactory a bean factory instance
+     * @var $_beanFactory IBeanFactory a bean factory instance
      * to retrieve objects from.
      */
     protected $_beanFactory;

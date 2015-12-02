@@ -20,7 +20,7 @@ use \MooDev\Bounce\Exception\BounceException;
  *
  * @property Config\Context contextConfig
  */
-class BeanFactory
+class BeanFactory implements IBeanFactory
 {
 
     /**
