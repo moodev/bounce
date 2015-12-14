@@ -6,7 +6,7 @@
  */
 
 namespace MooDev\Bounce\Config;
-use MooDev\Bounce\Context\BeanFactory;
+use MooDev\Bounce\Context\IBeanFactory;
 
 /**
  * Value provider which takes a map of value providers and returns a map
@@ -29,7 +29,7 @@ class MapValueProvider extends NoUndeclaredProperties implements ValueProvider
         $this->_valueProvidersMap = $valueProvidersMap;
     }
 
-    public function getValue(BeanFactory $beanFactory)
+    public function getValue(IBeanFactory $beanFactory)
     {
         $outputMap = array();
         foreach ($this->_valueProvidersMap as $mapIndex => $valueProvider) {

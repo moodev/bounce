@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.moo.com/xsd/bounce-beans-1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:php="http://www.moo.com/xsd/bounce-php-1.0"
+    xsi:schemaLocation="
+            http://www.moo.com/xsd/bounce-beans-1.0 file:///home/steves/moo/lib/moocommon-infra/src/resources/bounce-beans-1.0.xsd
+            http://www.moo.com/xsd/bounce-php-1.0 file:///home/steves/moo/lib/moocommon-infra/src/resources/bounce-php-1.0.xsd
+">
+    <bean id="one" class="StdClass">
+        <property name="simpleString" value="simpleString" />
+        <property name="simpleInt" value="2" />
+        <property name="simpleFloat" value="2.3" />
+        <property name="const">
+            <php:constant name="SIMPLE_CONSTANT" />
+        </property>
+        <property name="implicitString">
+            <value>implicitString</value>
+        </property>
+        <property name="implicitInt">
+            <value>4</value>
+        </property>
+        <property name="implicitFloat">
+            <value>3.2</value>
+        </property>
+        <property name="explicitString">
+            <php:string>explicitString</php:string>
+        </property>
+        <property name="explicitInt">
+            <php:int>4</php:int>
+        </property>
+        <property name="explicitFloat">
+            <php:float>3.2</php:float>
+        </property>
+        <property name="explicitBool">
+            <php:bool>true</php:bool>
+        </property>
+    </bean>
+
+    <bean name="two" class="StdClass">
+        <property name="childByRef" ref="one" />
+        <property name="childByDefinition">
+            <bean class="StdClass">
+                <property name="testNestedBeanProp" value="test!" />
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="fileReader" class="StdClass">
+        <property name="file">
+            <php:file>build.xml</php:file>
+        </property>
+    </bean>
+
+    <bean name="nullType" class="StdClass">
+        <property name="prop">
+            <null />
+        </property>
+    </bean>
+
+    <bean name="mapBean" class="StdClass">
+        <property name="map">
+            <map>
+                <entry name="one">
+                    <value>steve</value>
+                </entry>
+                <entry name="two">
+                    <value>simon</value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean name="listBean" class="StdClass">
+        <property name="list">
+            <list>
+                <value>steve</value>
+                <value>simon</value>
+                <bean ref="fileReader" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="three" class="StdClass">
+        <property name="hi"><value>foo</value></property>
+    </bean>
+
+    <bean name="four" class="StdClass">
+        <property name="goats" ref="three" />
+        <property name="stoats">
+            <bean name="blar" class="StdClass" />
+        </property>
+    </bean>
+
+    <bean name="five" class="StdClass">
+        <lookup-method name="goats" bean="three" />
+    </bean>
+</beans>

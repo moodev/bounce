@@ -6,7 +6,7 @@
  */
 
 namespace MooDev\Bounce\Config;
-use MooDev\Bounce\Context\BeanFactory;
+use MooDev\Bounce\Context\IBeanFactory;
 
 /**
  * Provides a simple value back. This is used for simple types
@@ -27,7 +27,7 @@ class SimpleValueProvider extends NoUndeclaredProperties implements ValueProvide
         $this->_value = $value;
     }
 
-    public function getValue(BeanFactory $beanFactory)
+    public function getValue(IBeanFactory $beanFactory)
     {
         return $this->_value;
     }

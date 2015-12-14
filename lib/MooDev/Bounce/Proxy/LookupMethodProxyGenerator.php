@@ -108,7 +108,7 @@ class LookupMethodProxyGenerator {
             ->addProperty(new Property("__bounceBeanFactory", "null", "private"));
 
         $constructorBuilder = MethodBuilder::build("__construct")
-            ->addParam(new Param("__bounceBeanFactory", false, null, '\MooDev\Bounce\Context\BeanFactory'))
+            ->addParam(new Param("__bounceBeanFactory", false, null, '\MooDev\Bounce\Context\IBeanFactory'))
             ->addLine('$this->__bounceBeanFactory = $__bounceBeanFactory;');
 
         $rCon = $rClass->getConstructor();
@@ -119,11 +119,15 @@ class LookupMethodProxyGenerator {
             $superCallBuilder = CallBuilder::build("parent::__construct");
             foreach ($rParams as $param) {
                 $superCallBuilder->addParam('$' . $param->getName());
+                $default = "null";
+                if ($param->isDefaultValueAvailable()) {
+                    $default = var_export($param->getDefaultValue(), true);
+                }
                 $constructorBuilder->addParam(
                     new Param(
                         $param->getName(),
                         $param->isOptional(),
-                        ($param->isOptional() ? $param->getDefaultValue() : "null"),
+                        $default,
                         null, // Type hint information isn't available from ReflectionParameter for some reason :-(
                         $param->isPassedByReference()));
             }

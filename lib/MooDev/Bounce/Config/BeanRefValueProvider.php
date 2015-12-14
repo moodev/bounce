@@ -6,11 +6,11 @@
  */
 
 namespace MooDev\Bounce\Config;
-use MooDev\Bounce\Context\BeanFactory;
+use MooDev\Bounce\Context\IBeanFactory;
 
 /**
  * Priovides a value using a bean name, and returning the bean with that name
- * from the provided BeanFactory instance
+ * from the provided IBeanFactory instance
  *
  * @author steves
  */
@@ -28,7 +28,7 @@ class BeanRefValueProvider extends NoUndeclaredProperties implements ValueProvid
         $this->_beanName = $beanName;
     }
 
-    public function getValue(BeanFactory $beanFactory)
+    public function getValue(IBeanFactory $beanFactory)
     {
         return $beanFactory->createByName($this->_beanName);
     }

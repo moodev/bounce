@@ -6,7 +6,6 @@
  */
 
 namespace MooDev\Bounce\Config;
-use MooDev\Bounce\Context\BeanFactory;
 
 class LookupMethod extends NoUndeclaredProperties
 {

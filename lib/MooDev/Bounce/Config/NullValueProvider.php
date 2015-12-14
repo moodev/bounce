@@ -6,7 +6,7 @@
  */
 
 namespace MooDev\Bounce\Config;
-use MooDev\Bounce\Context\BeanFactory;
+use MooDev\Bounce\Context\IBeanFactory;
 
 /**
  * Returns null as the value for a configuration item
@@ -15,7 +15,7 @@ use MooDev\Bounce\Context\BeanFactory;
  */
 class NullValueProvider implements ValueProvider
 {
-    public function getValue(BeanFactory $beanFactory)
+    public function getValue(IBeanFactory $beanFactory)
     {
         return null;
     }

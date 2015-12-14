@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.moo.com/xsd/bounce-beans-1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:php="http://www.moo.com/xsd/bounce-php-1.0"
+    xsi:schemaLocation="
+            http://www.moo.com/xsd/bounce-beans-1.0 file:///home/steves/moo/lib/moocommon-infra/src/resources/bounce-beans-1.0.xsd
+            http://www.moo.com/xsd/bounce-php-1.0 file:///home/steves/moo/lib/moocommon-infra/src/resources/bounce-php-1.0.xsd
+">
+    <bean id="childBean" class="StdClass">
+        <property name="simpleString" value="simpleString" />
+    </bean>
+
+</beans>

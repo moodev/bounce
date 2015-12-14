@@ -6,7 +6,7 @@
  */
 
 namespace MooDev\Bounce\Config;
-use MooDev\Bounce\Context\BeanFactory;
+use MooDev\Bounce\Context\IBeanFactory;
 
 /**
  * Class that instantiates another bean based on a nested definition
@@ -26,7 +26,7 @@ class BeanValueProvider extends NoUndeclaredProperties implements ValueProvider
         $this->_bean = $bean;
     }
 
-    public function getValue(BeanFactory $beanFactory)
+    public function getValue(IBeanFactory $beanFactory)
     {
         return $beanFactory->create($this->_bean);
     }

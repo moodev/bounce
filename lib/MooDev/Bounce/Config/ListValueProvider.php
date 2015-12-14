@@ -6,7 +6,7 @@
  */
 
 namespace MooDev\Bounce\Config;
-use MooDev\Bounce\Context\BeanFactory;
+use MooDev\Bounce\Context\IBeanFactory;
 
 /**
  * Value provider which takes a list of value providers and returns a list
@@ -28,7 +28,7 @@ class ListValueProvider extends NoUndeclaredProperties implements ValueProvider
         $this->_valueProviders = $valueProviders;
     }
 
-    public function getValue(BeanFactory $beanFactory)
+    public function getValue(IBeanFactory $beanFactory)
     {
         $outputArray = array();
         foreach ($this->_valueProviders as $valueProvider) {
