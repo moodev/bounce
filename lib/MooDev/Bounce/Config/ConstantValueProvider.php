@@ -6,7 +6,7 @@
  */
 
 namespace MooDev\Bounce\Config;
-use MooDev\Bounce\Context\BeanFactory;
+use MooDev\Bounce\Context\IBeanFactory;
 
 /**
  * Provides a value from a global PHP constant
@@ -25,7 +25,7 @@ class ConstantValueProvider extends NoUndeclaredProperties implements ValueProvi
     /**
      * Returns the value of the defined constant name
      */
-    public function getValue(BeanFactory $beanFactory)
+    public function getValue(IBeanFactory $beanFactory)
     {
         return defined($this->_constantName) ? constant($this->_constantName) : null;
     }

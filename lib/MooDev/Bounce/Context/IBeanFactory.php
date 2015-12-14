@@ -6,6 +6,8 @@
  */
 namespace MooDev\Bounce\Context;
 
+use MooDev\Bounce\Config\Bean;
+
 /**
  * Thing that creates beans.
  */
@@ -23,5 +25,12 @@ interface IBeanFactory
      * @return string[] A map of bean names to class names.
      */
     public function getAllBeanClasses();
+
+    /**
+     * Create a bean based on a bean definition.
+     * @param Bean $_bean
+     * @return mixed
+     */
+    public function create(Bean $_bean);
 
 }

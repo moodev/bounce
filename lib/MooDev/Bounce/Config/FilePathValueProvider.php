@@ -6,7 +6,7 @@
  */
 
 namespace MooDev\Bounce\Config;
-use MooDev\Bounce\Context\BeanFactory;
+use MooDev\Bounce\Context\IBeanFactory;
 use MooDev\Bounce\Exception\BounceException;
 
 /**
@@ -31,7 +31,7 @@ class FilePathValueProvider extends NoUndeclaredProperties implements ValueProvi
         $this->_rootDirectory = realpath(realpath(constant("DOC_DIR")) . "/../");
     }
 
-    public function getValue(BeanFactory $beanFactory)
+    public function getValue(IBeanFactory $beanFactory)
     {
         $filePath = $this->_joinPaths($this->_rootDirectory, $this->_relativePath);
         //Now turn this into a canonical file path so that we can check it's

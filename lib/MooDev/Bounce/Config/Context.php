@@ -17,10 +17,15 @@ class Context extends NoUndeclaredProperties
 
     /**
      * @var string a unique identifier for this context configuration. This will be used to
-     * reuse the same BeanFactory instance when creating the application context if context
+     * reuse the same IBeanFactory instance when creating the application context if context
      * sharing is enabled.
      */
     public $uniqueId = null;
+
+    /**
+     * @var string Path to the file that the context was loaded from.
+     */
+    public $fileName = null;
     
     /**
      * @var Bean[] keyed on the bean name that are directly defined
@@ -30,7 +35,7 @@ class Context extends NoUndeclaredProperties
 
     /**
      * @var Context[] list of child contexts which are referenced or
-     * imported by this context. This will be queried if the BeanFactory for this context requests
+     * imported by this context. This will be queried if the IBeanFactory for this context requests
      * a bean which is defined on an imported context.
      */
     public $childContexts = array();

@@ -7,6 +7,9 @@
 
 namespace MooDev\Bounce\Config;
 
+/**
+ * Bounce will call the configure method after instantiating any class that implements this interface.
+ */
 interface Configurable
 {
 

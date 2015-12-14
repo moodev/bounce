@@ -74,6 +74,7 @@ class XmlContextParser implements IContextProvider
         $this->_phpTypeSafeParser = new TypeSafeParser("http://www.moo.com/xsd/bounce-php-1.0");
         $contextConfig = $this->_parseConfigXml($xmlContent);
         $contextConfig->uniqueId = $xmlFilePath;
+        $contextConfig->fileName = $xmlFilePath;
 
         //Remember that we've processed this, and pop it off the processing stack
         $this->_processedFiles[$xmlFilePath] = $contextConfig;
