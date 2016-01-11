@@ -29,8 +29,9 @@ class SymfonyApplicationContext extends ApplicationContext
     {
         $contextFile = realpath($contextFile);
 
-        $file = $cacheDir . '/' . basename($contextFile) . '.cache';
         $className = "c" . Base32Hex::encode($contextFile);
+
+        $file = $cacheDir . '/' . $className;
 
         $containerConfigCache = new ConfigCache($file, $isDebug);
 
