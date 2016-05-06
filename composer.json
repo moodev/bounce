@@ -6,7 +6,8 @@
     "homepage": "http://github.com/moodev/bounce",
     "license": "ISC",
     "require": {
-        "php": ">=5.4.0",
+        "php": "^5.4 || ^7.0",
+        "ext-apc": "*",
         "symfony/dependency-injection": ">=2.3.0 <2.8.0",
         "symfony/config": ">=2.3.0 <2.8.0"
     },
