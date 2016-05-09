@@ -24,7 +24,6 @@ before_script:
   - if [[ $TRAVIS_PHP_VERSION =~ 5.[34] ]] ; then echo 'extension="apc.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi;
   - if [[ $TRAVIS_PHP_VERSION =~ 5.[56] ]] ; then echo yes | pecl install apcu-4.0.10; fi;
   - if [[ $TRAVIS_PHP_VERSION = 7.* ]] ; then echo yes | pecl install -f apcu_bc; echo -e 'extension="apcu.so"\nextension="apc.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi;
-  - if [[ $TRAVIS_PHP_VERSION =~ 5.[34] ]] ; then echo 'extension="apc.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi;
   - if [[ $TRAVIS_PHP_VERSION != 'hhvm' ]]; then echo "apc.enable_cli = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi;
   - composer require symfony/dependency-injection:${SYMFONY_VERSION} symfony/config:${SYMFONY_VERSION}
   - composer install --dev
