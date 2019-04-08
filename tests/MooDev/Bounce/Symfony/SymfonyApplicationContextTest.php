@@ -7,13 +7,8 @@ use MooDev\Bounce\Config;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
-class SymfomnyApplicationContextTest extends TestCase
+class SymfonyApplicationContextTest extends TestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-//        $this->markTestSkipped();
-    }
 
     public function testLoadFullXml()
     {
