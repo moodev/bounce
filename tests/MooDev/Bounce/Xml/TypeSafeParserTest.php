@@ -14,6 +14,7 @@ require_once __DIR__ . '/../../../TestInit.php';
  */
 class TypeSafeParserTest extends \PHPUnit_Framework_TestCase
 {
+
     /**
      * Object Under Test
      *

@@ -9,6 +9,10 @@ require_once __DIR__ . '/../../../TestInit.php';
 
 class LookupMethodProxyGeneratorTest extends \PHPUnit_Framework_TestCase {
 
+    public function tearDown() {
+        \Mockery::close();
+    }
+
     public function testProxyGenerationNoMethodsStdClass() {
         $factory = new ProxyGeneratorFactory();
         $generator = $factory->getLookupMethodProxyGenerator("LookupMethodProxyGeneratorTest");
@@ -42,18 +46,12 @@ class LookupMethodProxyGeneratorTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(2, count($rClass->getMethods()));
         $params = $constructor->getParameters();
         reset($params);
-        each($params);
         /**
          * @var \ReflectionParameter $param
          */
-        list($key, $param) = each($params);
-        $this->assertEquals("a", $param->getName());
-        list($key, $param) = each($params);
-        $this->assertEquals("b", $param->getName());
-        $this->assertEquals("foo", @$param->getDefaultValue());
-        list($key, $param) = each($params);
-        $this->assertEquals("cat", $param->getName());
-        $this->assertEquals("harhar", @$param->getDefaultValue());
+        $this->assertEquals("a", $params[1]->getName());
+        $this->assertEquals("b", $params[2]->getName());
+        $this->assertEquals("cat", $params[3]->getName());
 
         $this->assertTrue($rClass->hasMethod("getA"));
         $this->assertTrue($rClass->hasProperty("a"));
@@ -94,18 +92,12 @@ class LookupMethodProxyGeneratorTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(4, count($rClass->getMethods()));
         $params = $constructor->getParameters();
         reset($params);
-        each($params);
         /**
          * @var \ReflectionParameter $param
          */
-        list($key, $param) = each($params);
-        $this->assertEquals("a", $param->getName());
-        list($key, $param) = each($params);
-        $this->assertEquals("b", $param->getName());
-        $this->assertEquals("foo", @$param->getDefaultValue());
-        list($key, $param) = each($params);
-        $this->assertEquals("cat", $param->getName());
-        $this->assertEquals("harhar", @$param->getDefaultValue());
+        $this->assertEquals("a", $params[1]->getName());
+        $this->assertEquals("b", $params[2]->getName());
+        $this->assertEquals("cat", $params[3]->getName());
 
         $this->assertTrue($rClass->hasMethod("getA"));
         $this->assertTrue($rClass->hasProperty("a"));

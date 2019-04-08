@@ -6,14 +6,13 @@
     "homepage": "http://github.com/moodev/bounce",
     "license": "ISC",
     "require": {
-        "php": "^5.4 || ^7.0",
-        "ext-apc": "*",
-        "symfony/dependency-injection": ">=2.3.0 <2.8.0",
-        "symfony/config": ">=2.3.0 <2.8.0"
+        "php": "^5.5.9|>=7.0.8",
+        "symfony/dependency-injection": "~3.4|~4.0",
+        "symfony/config": "~3.4|~4.0"
     },
     "require-dev": {
-        "mockery/mockery": "~0.9.0",
-        "phpunit/phpunit": "~4.3.0"
+        "mockery/mockery": "~1.2",
+        "phpunit/phpunit": "~5.7|^6.0|^7.0|^8.0"
     },
     "autoload": {
         "psr-0": {

@@ -131,17 +131,13 @@ class SymfonyConfigBeanFactory implements IBeanFactory
         }
 
         if ($bean->scope) {
-            // This is getting killed off in Symfony 3. Sigh.
-            // TODO: deal with Symfony 3.
             switch ($bean->scope) {
                 case "singleton":
-                    $def->setScope(ContainerBuilder::SCOPE_CONTAINER);
+                    $def->setShared(true);
                     break;
                 case "prototype":
-                    $def->setScope(ContainerBuilder::SCOPE_PROTOTYPE);
+                    $def->setShared(false);
                     break;
-                default:
-                    $def->setScope($bean->scope);
             }
         }
 
@@ -155,11 +151,9 @@ class SymfonyConfigBeanFactory implements IBeanFactory
         }
 
         if ($bean->factoryBean) {
-            $def->setFactoryService($bean->factoryBean);
-            $def->setFactoryMethod($bean->factoryMethod);
+            $def->setFactory([$bean->factoryBean, $bean->factoryMethod]);
         } elseif ($bean->factoryMethod) {
-            $def->setFactoryClass($originalClass);
-            $def->setFactoryMethod($bean->factoryMethod);
+            $def->setFactory([$originalClass, $bean->factoryMethod]);
         }
 
         return $def;
