@@ -172,20 +172,6 @@ class SymfomnyApplicationContextTest extends TestCase
         $this->assertEquals("simpleString", $a->thing->thing->thing);
     }
 
-    public function testResolutionViaParentFactory()
-    {
-        if (!defined("DOC_DIR")) {
-            define("DOC_DIR", realpath(__DIR__ . '/../../../'));
-        }
-        if (!defined("SIMPLE_CONSTANT")) {
-            define("SIMPLE_CONSTANT", "Hello!");
-        }
-        $xmlFile = __DIR__ . "/factoryParent.xml";
-        $xmlContext = new SymfonyApplicationContext($xmlFile);
-        $childBean = $xmlContext->get("childBean");
-        $this->assertEquals("simpleString", $childBean->getThing());
-    }
-
     /**
      * @expectedException \MooDev\Bounce\Exception\BounceException
      * @expectedExceptionMessage Infinite recursion import detected

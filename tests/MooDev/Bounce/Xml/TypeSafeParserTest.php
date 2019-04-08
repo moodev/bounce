@@ -15,7 +15,6 @@ require_once __DIR__ . '/../../../TestInit.php';
  */
 class TypeSafeParserTest extends TestCase
 {
-
     /**
      * Object Under Test
      *
@@ -39,7 +38,6 @@ class TypeSafeParserTest extends TestCase
 <Root xmlns="http://www.moo.com/xsd/template-1.0">
     <MyInt>1234</MyInt>
 </Root>
-
 XML;
         $rootElement = new \SimpleXMLElement($testXml);
         $myint = $this->_typeSafeParser->parseInt($rootElement, "MyInt");
@@ -482,12 +480,6 @@ XML;
         $this->_typeSafeParser = null;
     }
 
-    /**
-     * Constructs the test case.
-     */
-    public function __construct()
-    {
-    }
 
 }
 
