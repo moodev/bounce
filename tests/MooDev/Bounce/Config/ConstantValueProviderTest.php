@@ -6,13 +6,14 @@
  */
 namespace MooDev\Bounce\Config;
 use MooDev\Bounce\Context\BeanFactory;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
 /**
  * ConstantValueProvider test case.
  */
-class ConstantValueProviderTest extends \PHPUnit_Framework_TestCase
+class ConstantValueProviderTest extends TestCase
 {
 
     public function testConstantRetrieval()

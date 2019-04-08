@@ -6,13 +6,14 @@
  */
 namespace MooDev\Bounce\Xml;
 use MooDev\Bounce\Exception\ParserException;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
 /**
  *  test case.
  */
-class TypeSafeParserTest extends \PHPUnit_Framework_TestCase
+class TypeSafeParserTest extends TestCase
 {
 
     /**

@@ -7,13 +7,14 @@
 namespace MooDev\Bounce\Config;
 use MooDev\Bounce\Context\BeanFactory;
 use MooDev\Bounce\Exception\BounceException;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
 /**
  * FilePathValueProvider test case.
  */
-class FilePathValueProviderTest extends \PHPUnit_Framework_TestCase
+class FilePathValueProviderTest extends TestCase
 {
 
     public function testGoodFilepath()

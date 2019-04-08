@@ -7,13 +7,14 @@
 namespace MooDev\Bounce\Config;
 
 use MooDev\Bounce\Context\BeanFactory;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
 /**
  * BeanValueProvider test case.
  */
-class BeanValueProviderTest extends \PHPUnit_Framework_TestCase
+class BeanValueProviderTest extends TestCase
 {
 
     public function testBeanProvider()

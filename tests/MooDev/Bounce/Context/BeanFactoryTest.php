@@ -9,13 +9,14 @@ require_once __DIR__ . '/../../../TestInit.php';
 
 use MooDev\Bounce\Config;
 use MooDev\Bounce\Proxy\ProxyGeneratorFactory;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 use MooDev\Bounce\Exception\BounceException;
 
 /**
  * BeanFactory test case.
  */
-class BeanFactoryTest extends \PHPUnit_Framework_TestCase
+class BeanFactoryTest extends TestCase
 {
 
     public function setUp() {

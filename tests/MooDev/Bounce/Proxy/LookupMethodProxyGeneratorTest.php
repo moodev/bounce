@@ -3,11 +3,12 @@ namespace MooDev\Bounce\Proxy;
 use MooDev\Bounce\Config\Bean;
 use MooDev\Bounce\Config\LookupMethod;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
 
-class LookupMethodProxyGeneratorTest extends \PHPUnit_Framework_TestCase {
+class LookupMethodProxyGeneratorTest extends TestCase {
 
     public function tearDown() {
         \Mockery::close();

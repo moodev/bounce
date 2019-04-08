@@ -5,12 +5,14 @@
  * @license ISC
  */
 namespace MooDev\Bounce\Context;
+use PHPUnit\Framework\TestCase;
+
 require_once __DIR__ . '/../../../TestInit.php';
 
 /**
  * ApcCachedXmlApplicationContext test case.
  */
-class ApcCachedXmlApplicationContextTest extends \PHPUnit_Framework_TestCase
+class ApcCachedXmlApplicationContextTest extends TestCase
 {
 
     /**

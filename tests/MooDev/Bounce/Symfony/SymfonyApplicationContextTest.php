@@ -1,12 +1,13 @@
 <?php
 namespace MooDev\Bounce\Symfony;
 use MooDev\Bounce\Context\ValueTagProvider;
+use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
 use MooDev\Bounce\Config;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
-class SymfomnyApplicationContextTest extends \PHPUnit_Framework_TestCase
+class SymfomnyApplicationContextTest extends TestCase
 {
     public function setUp()
     {
