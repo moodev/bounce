@@ -11,7 +11,8 @@ class InMemoryProxyStoreTest extends TestCase {
     {
         $store = new UniqTmpDirFilesystemProxyStore();
         $ns = $store->getProxyNamespace();
-        eval("namespace $ns;");
+        $this->assertStringContainsString('C', $ns);
+        $this->assertSame(113, strlen($ns));
     }
 
 }

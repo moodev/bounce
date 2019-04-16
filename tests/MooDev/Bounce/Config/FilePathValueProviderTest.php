@@ -36,11 +36,8 @@ class FilePathValueProviderTest extends TestCase
             define("DOC_DIR", realpath(__DIR__ . '/../../../'));
         }
         $impl = new FilePathValueProvider("../moo-common-log/build.xml");
-        try {
-            $impl->getValue(BeanFactory::getInstance(new Context()));
-        } catch (BounceException $e) {
-            $this->assertEquals(1, preg_match("|^Relative path ../moo-common-log/build.xml (.*) does not lie within the root (.*)|", $e->getMessage()));
-        }
+        $this->expectException(BounceException::class);
+        $impl->getValue(BeanFactory::getInstance(new Context()));
     }
 }
 
