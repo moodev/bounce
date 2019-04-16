@@ -23,8 +23,7 @@ class UniqTmpDirFilesystemProxyStoreTest extends TestCase {
     {
         $store = new UniqTmpDirFilesystemProxyStore();
         $ns = $store->getProxyNamespace();
-        var_dump($ns);
-        $this->assertSame(113, strlen($ns));
+        $this->assertNotEmpty($ns);
     }
 
 }
