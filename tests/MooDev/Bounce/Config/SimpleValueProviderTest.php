@@ -6,13 +6,14 @@
  */
 namespace MooDev\Bounce\Config;
 use MooDev\Bounce\Context\BeanFactory;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
 /**
  * SimpleValueProvider test case.
  */
-class SimpleValueProviderTest extends \PHPUnit_Framework_TestCase
+class SimpleValueProviderTest extends TestCase
 {
 
     public function testSimpleValue()

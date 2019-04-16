@@ -7,13 +7,14 @@
 namespace MooDev\Bounce\Config;
 use MooDev\Bounce\Context\BeanFactory;
 use MooDev\Bounce\Exception\BounceException;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
 /**
  * FilePathValueProvider test case.
  */
-class FilePathValueProviderTest extends \PHPUnit_Framework_TestCase
+class FilePathValueProviderTest extends TestCase
 {
 
     public function testGoodFilepath()
@@ -35,11 +36,8 @@ class FilePathValueProviderTest extends \PHPUnit_Framework_TestCase
             define("DOC_DIR", realpath(__DIR__ . '/../../../'));
         }
         $impl = new FilePathValueProvider("../moo-common-log/build.xml");
-        try {
-            $impl->getValue(BeanFactory::getInstance(new Context()));
-        } catch (BounceException $e) {
-            $this->assertEquals(1, preg_match("|^Relative path ../moo-common-log/build.xml (.*) does not lie within the root (.*)|", $e->getMessage()));
-        }
+        $this->expectException(BounceException::class);
+        $impl->getValue(BeanFactory::getInstance(new Context()));
     }
 }
 

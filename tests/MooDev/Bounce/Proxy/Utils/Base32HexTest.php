@@ -1,9 +1,11 @@
 <?php
 namespace MooDev\Bounce\Proxy\Utils;
+use PHPUnit\Framework\TestCase;
+
 require_once __DIR__ . '/../../../../TestInit.php';
 
 
-class Base32HexTest extends \PHPUnit_Framework_TestCase {
+class Base32HexTest extends TestCase {
 
     public function encodeData() {
         return array(

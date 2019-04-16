@@ -6,13 +6,14 @@
  */
 namespace MooDev\Bounce\Xml;
 use MooDev\Bounce\Exception\ParserException;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
 /**
  *  test case.
  */
-class TypeSafeParserTest extends \PHPUnit_Framework_TestCase
+class TypeSafeParserTest extends TestCase
 {
     /**
      * Object Under Test
@@ -37,7 +38,6 @@ class TypeSafeParserTest extends \PHPUnit_Framework_TestCase
 <Root xmlns="http://www.moo.com/xsd/template-1.0">
     <MyInt>1234</MyInt>
 </Root>
-
 XML;
         $rootElement = new \SimpleXMLElement($testXml);
         $myint = $this->_typeSafeParser->parseInt($rootElement, "MyInt");
@@ -480,12 +480,6 @@ XML;
         $this->_typeSafeParser = null;
     }
 
-    /**
-     * Constructs the test case.
-     */
-    public function __construct()
-    {
-    }
 
 }
 

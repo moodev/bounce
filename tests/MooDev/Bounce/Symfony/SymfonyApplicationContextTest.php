@@ -1,12 +1,13 @@
 <?php
 namespace MooDev\Bounce\Symfony;
 use MooDev\Bounce\Context\ValueTagProvider;
+use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
 use MooDev\Bounce\Config;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
-class SymfomnyApplicationContextTest extends \PHPUnit_Framework_TestCase
+class SymfonyApplicationContextTest extends TestCase
 {
 
     public function testLoadFullXml()
@@ -19,9 +20,7 @@ class SymfomnyApplicationContextTest extends \PHPUnit_Framework_TestCase
         }
         $xmlFile = __DIR__ . "/fullContext.xml";
         $xmlContext = new SymfonyApplicationContext($xmlFile);
-        $this->assertNotNull($xmlContext->get("one"));
         $one = $xmlContext->get("one");
-        $this->assertEquals("Hello!", $one->const);
         $this->assertEquals("simpleString", $one->simpleString);
         $this->assertEquals(2, $one->simpleInt);
         $this->assertEquals(2.3, $one->simpleFloat);
@@ -166,20 +165,6 @@ class SymfomnyApplicationContextTest extends \PHPUnit_Framework_TestCase
         $xmlContext = new SymfonyApplicationContext($xmlFile);
         $a = $xmlContext->get("a");
         $this->assertEquals("simpleString", $a->thing->thing->thing);
-    }
-
-    public function testResolutionViaParentFactory()
-    {
-        if (!defined("DOC_DIR")) {
-            define("DOC_DIR", realpath(__DIR__ . '/../../../'));
-        }
-        if (!defined("SIMPLE_CONSTANT")) {
-            define("SIMPLE_CONSTANT", "Hello!");
-        }
-        $xmlFile = __DIR__ . "/factoryParent.xml";
-        $xmlContext = new SymfonyApplicationContext($xmlFile);
-        $childBean = $xmlContext->get("childBean");
-        $this->assertEquals("simpleString", $childBean->getThing());
     }
 
     /**

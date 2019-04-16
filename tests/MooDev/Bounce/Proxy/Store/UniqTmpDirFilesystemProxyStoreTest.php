@@ -1,10 +1,11 @@
 <?php
 namespace MooDev\Bounce\Proxy\Store;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../../TestInit.php';
 
-class UniqTmpDirFilesystemProxyStoreTest extends \PHPUnit_Framework_TestCase {
+class UniqTmpDirFilesystemProxyStoreTest extends TestCase {
 
     public function testStoreAndImport()
     {
@@ -22,7 +23,7 @@ class UniqTmpDirFilesystemProxyStoreTest extends \PHPUnit_Framework_TestCase {
     {
         $store = new UniqTmpDirFilesystemProxyStore();
         $ns = $store->getProxyNamespace();
-        eval("namespace $ns;");
+        $this->assertNotEmpty($ns);
     }
 
 }

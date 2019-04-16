@@ -39,7 +39,7 @@ class FilePathValueProvider extends NoUndeclaredProperties implements ValueProvi
         $canonicalPath = realpath($filePath);
         //If the canonicalPath is false, then the path doesn't exist, so we will
         //let this through.
-        if ($canonicalPath !== false && !(strpos($canonicalPath, realpath($this->_rootDirectory)) === 0)) {
+        if ($canonicalPath === false && !(strpos($canonicalPath, realpath($this->_rootDirectory)) === 0)) {
             throw new BounceException("Relative path $this->_relativePath ($canonicalPath) "
                 . "does not lie within the root $this->_rootDirectory (" . realpath($this->_rootDirectory) . ")");
         }

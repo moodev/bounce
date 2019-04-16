@@ -6,6 +6,7 @@
  */
 namespace MooDev\Bounce\Context;
 use MooDev\Bounce\Exception\BounceException;
+use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
 use MooDev\Bounce\Config;
 
@@ -14,7 +15,7 @@ require_once __DIR__ . '/../../../TestInit.php';
 /**
  * XmlApplicationContext test case.
  */
-class XmlApplicationContextTest extends \PHPUnit_Framework_TestCase
+class XmlApplicationContextTest extends TestCase
 {
     public function testLoadFullXml()
     {
